@@ -30,7 +30,7 @@ def root():
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],   # Later replace "*" with frontend domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
