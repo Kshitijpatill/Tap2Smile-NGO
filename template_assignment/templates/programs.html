@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Programs</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Our Programs</h1>
+
+    <ul>
+        {% for program in programs %}
+            <li>
+                <strong>{{ program.name }}</strong><br>
+                {{ program.description }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
