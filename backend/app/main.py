@@ -6,13 +6,13 @@ from fastapi.responses import JSONResponse
 
 from app.routers import (
     programs,
+    projects,
+    events,
+    volunteers,
     contact,
-    # projects,
-    # events,
-    # volunteers,
-    # donations,
-    # impact,
-    # admin
+    donations,
+    impact,
+    admin
 )
 
 app = FastAPI(
@@ -38,18 +38,18 @@ app.add_middleware(
 
 # Public Routes
 app.include_router(programs.router, prefix="/api/programs", tags=["Programs"])
-# app.include_router(projects.router, prefix="/api/projects", tags=["Projects"])
-# app.include_router(events.router, prefix="/api/events", tags=["Events"])
-# app.include_router(impact.router, prefix="/api/impact", tags=["Impact"])
+app.include_router(projects.router, prefix="/api/projects", tags=["Projects"])
+app.include_router(events.router, prefix="/api/events", tags=["Events"])
+app.include_router(impact.router, prefix="/api/impact", tags=["Impact"])
 
 # Form and Submission Routes
-# app.include_router(volunteers.router, prefix="/api/forms", tags=["Forms"])
+app.include_router(volunteers.router, prefix="/api/forms", tags=["Forms"])
 app.include_router(contact.router, prefix="/api/contact", tags=["Contact"])
-# app.include_router(
-#     donations.router, prefix="/api/donations", tags=["Donations"])
+app.include_router(
+    donations.router, prefix="/api/donations", tags=["Donations"])
 
 # Admin and Authentication Routes
-# app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 
 
 @app.exception_handler(RequestValidationError)
