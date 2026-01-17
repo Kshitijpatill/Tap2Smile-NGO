@@ -5,6 +5,10 @@ from app.core.security import verify_password, create_access_token
 
 router = APIRouter()
 
+# login credentials
+# email:admin@taptosmile.org
+# pass: admin123
+
 @router.post("/login")
 async def admin_login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = await db.users.find_one({"email": form_data.username})
