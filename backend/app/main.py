@@ -14,6 +14,9 @@ from app.routers import (
     impact,
     admin
 )
+from fastapi.responses import FileResponse
+
+
 
 app = FastAPI(
     title="Tap To Smile API",
@@ -21,6 +24,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
+@app.get("/favicon.ico")
+def favicon():
+    return FileResponse("favicon.ico")
 
 @app.get("/")
 def root():
