@@ -17,6 +17,7 @@ class ProjectBase(BaseModel):
 class ProjectResponse(ProjectBase):
     id: str
     created_at: datetime
+    program_id: Optional[str] = None
 
     class Config:
         from_attributes = True

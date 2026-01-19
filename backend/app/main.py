@@ -2,7 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import test_mongodb_connection
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+
 
 from app.routers import (
     programs,
@@ -14,14 +15,12 @@ from app.routers import (
     impact,
     admin
 )
-from fastapi.responses import FileResponse
 
 
 
 app = FastAPI(
     title="Tap To Smile API",
     description="Backend APIs for NGO website",
-    version="1.0.0"
 )
 
 @app.get("/favicon.ico")
@@ -49,7 +48,7 @@ app.include_router(events.router, prefix="/api/events", tags=["Events"])
 app.include_router(impact.router, prefix="/api/impact", tags=["Impact"])
 
 # Form and Submission Routes
-app.include_router(volunteers.router, prefix="/api/forms", tags=["Forms"])
+app.include_router(volunteers.router, prefix="/api/volunteers", tags=["Volunteers"])
 app.include_router(contact.router, prefix="/api/contact", tags=["Contact"])
 app.include_router(
     donations.router, prefix="/api/donations", tags=["Donations"])
