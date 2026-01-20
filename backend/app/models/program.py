@@ -12,6 +12,7 @@ class ProgramBase(BaseModel):
 class ProgramResponse(ProgramBase):
     id: str
     created_at: datetime
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

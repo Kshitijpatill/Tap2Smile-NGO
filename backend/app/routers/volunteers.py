@@ -1,20 +1,93 @@
-from fastapi import APIRouter, HTTPException
-from app.models.volunteer import VolunteerCreate
+from fastapi import APIRouter, HTTPException, Depends, Body
+from app.models.volunteer import VolunteerCreate, VolunteerResponse, VolunteerUpdate
 from app.core.database import db
+from typing import List
+from app.core.deps import get_current_user
 from datetime import datetime
+from bson import ObjectId
 
 router = APIRouter()
 
 
-@router.post("/volunteer")
-async def submit_volunteer(data: VolunteerCreate):
-    volunteer_dict = data.model_dump()
-    volunteer_dict["created_at"] = datetime.utcnow()
-    volunteer_dict["status"] = "new"
+@router.post("/", response_model=VolunteerResponse)
+async def submit_volunteer_application(application: VolunteerCreate):
+    """
+    Public endpoint for users to apply as a volunteer.
+    """
+    existing_volunteer = await db.volunteers.find_one({"email": application.email})
 
-    result = await db.volunteers.insert_one(volunteer_dict)
+    if existing_volunteer:
+        raise HTTPException(
+            status_code=400,
+            detail="An application with this email already exists."
+        )
+    app_dict = application.model_dump()
 
-    if result.inserted_id:
-        return {"success": True, "message": "Volunteer registered successfully", "id": str(result.inserted_id)}
+    app_dict["status"] = "new"
+    app_dict["created_at"] = datetime.utcnow()
 
-    raise HTTPException(status_code=500, detail="Failed to register volunteer")
+    result = await db.volunteers.insert_one(app_dict)
+
+    new_volunteer = await db.volunteers.find_one({"_id": result.inserted_id})
+    new_volunteer["id"] = str(new_volunteer["_id"])
+
+    return new_volunteer
+
+
+@router.get("/", dependencies=[Depends(get_current_user)], response_model=List[VolunteerResponse])
+async def get_all_volunteers():
+    """
+    Admin only: List all volunteer applications.
+    """
+    cursor = db.volunteers.find().sort("created_at", -1)
+    volunteers = await cursor.to_list(length=100)
+
+    results = []
+    for v in volunteers:
+        v["id"] = str(v["_id"])
+        results.append(v)
+    return results
+
+
+@router.patch("/{volunteer_id}/status", dependencies=[Depends(get_current_user)])
+async def update_volunteer_status(volunteer_id: str, update_data: VolunteerUpdate):
+    """
+    Admin only: Update the status of a volunteer.
+    Body: { "status": "contacted" }
+    """
+    if not ObjectId.is_valid(volunteer_id):
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+
+    allowed_statuses = ["new", "contacted", "onboarded", "rejected"]
+
+    if update_data.status not in allowed_statuses:
+        raise HTTPException(
+            status_code=400, detail=f"Status must be one of {allowed_statuses}")
+
+    result = await db.volunteers.update_one(
+        {"_id": ObjectId(volunteer_id)},
+        {"$set": {"status": update_data.status}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(
+            status_code=404, detail="Volunteer application not found")
+
+    return {"success": True, "message": f"Status updated to {update_data.status}"}
+
+
+@router.delete("/{volunteer_id}", dependencies=[Depends(get_current_user)])
+async def delete_volunteer(volunteer_id: str):
+    """
+    Admin only: Delete a volunteer application.
+    """
+    if not ObjectId.is_valid(volunteer_id):
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+
+    result = await db.volunteers.delete_one({"_id": ObjectId(volunteer_id)})
+
+    if result.deleted_count == 0:
+        raise HTTPException(
+            status_code=404, detail="Volunteer application not found")
+
+    return {"success": True, "message": "Application deleted successfully"}

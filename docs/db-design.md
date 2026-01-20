@@ -1,32 +1,20 @@
+
 # Database Schema (MongoDB)
 
-
-##  Collections List
-
-```
-admins   ---> Stores admin users , like who can access the admin panel
-
-programs ---> programs which are executed under a NGO
-
-projects ---> projects which are executed under a program
-
-events  ---> events which are executed under a program
-
-volunteers  ---> volunteers who fill the form
-
-donations  ---> donations made by people and volunteers
-
-contact messages  ---> contact messages sent by users
-
-impact_stats  ---> impact stats of a program, like how many events were held , total donations total liveline volunteers etc
-
-```
-
+## Collections List
+- **`users`** → Stores admin users (formerly 'admins')
+- **`programs`** → Programs executed under the NGO (e.g., Project Kāla)
+- **`projects`** → Specific projects executed under a Program
+- **`events`** → One-time or recurring events
+- **`volunteers`** → Volunteer application forms
+- **`donations`** → Donation records and payment statuses
+- **`contact_messages`** → Messages sent via the 'Contact Us' form
+- **`impact_stats`** → Statistics displayed on the homepage
 
 ---
 
-### `admins`
-
+## `users`
+*Represents the Admin accounts.*
 
 ```json
 {
@@ -34,72 +22,64 @@ impact_stats  ---> impact stats of a program, like how many events were held , t
   "name": "string",
   "email": "string",
   "password_hash": "string",
-  "role": "admin",
+  "role": "admin | superadmin",
   "is_active": true,
   "created_at": "ISODate",
   "updated_at": "ISODate"
 }
-
-```
-`programs`
-
-
-``` json
-{
-  "_id": ObjectId,
-  "title": "string",
-  "slug": "string",
-  "short_description": "string",
-  "full_description": "string",
-  "icon": "string",
-  "cover_image": "string",
-  "is_active": true,
-  "created_at": "ISODate",
-  "updated_at": "ISODate"
-}
-
 ```
 
-`projects`
-``` json
-{
-  "_id": ObjectId,
-  "title": "string",
-  "slug": "string",
-  "program_id": "ObjectId",
-  "short_description": "string",
-  "description": "string",
-  "images": ["string"],
-  "location": "string",
-  "start_date": "ISODate",
-  "end_date": "ISODate | null",
-  "status": "ongoing | completed",
-  "is_featured": false,
-  "created_at": "ISODate",
-  "updated_at": "ISODate"
-}
-```
+## `programs`
+*The main pillars of the NGO (e.g., Education, Health).*
 
-
-`events`
 ```json
 {
   "_id": ObjectId,
   "title": "string",
-  "slug": "string",
   "description": "string",
-  "event_date": "ISODate",
-  "location": "string",
-  "banner_image": "string",
-  "is_upcoming": true,
+  "icon": "string",
+  "is_active": true,
   "created_at": "ISODate",
   "updated_at": "ISODate"
 }
-
 ```
 
+## `projects`
+*Specific initiatives linked to a Program.*
 
-`volunteers`
+```json
+{
+  "_id": ObjectId,
+  "title": "string",
+  "description": "string",
+  "program_id": ObjectId,  // Reference to 'programs' collection
+  "location": "string",
+  "images": ["string"],
+  "start_date": "ISODate",
+  "end_date": "ISODate | null",
+  "is_active": true,
+  "created_at": "ISODate",
+  "updated_at": "ISODate"
+}
+```
+
+## `events`
+*Upcoming or past events.*
+
+```json
+{
+  "_id": ObjectId,
+  "title": "string",
+  "description": "string",
+  "event_date": "ISODate",
+  "location": "string",
+  "is_upcoming": true,
+  "created_at": "ISODate"
+}
+```
+
+## `volunteers`
+*Applications submitted via the website.*
 
 ```json
 {
@@ -108,16 +88,14 @@ impact_stats  ---> impact stats of a program, like how many events were held , t
   "email": "string",
   "phone": "string",
   "city": "string",
-  "area_of_interest": "string",
-  "message": "string",
-  "status": "new | contacted | onboarded",
+  "interest_area": "string",
+  "status": "new | contacted | onboarded | rejected",
   "created_at": "ISODate"
 }
-
 ```
 
-
-`donations`
+## `donations`
+*Records of donation attempts and successes.*
 
 ```json
 {
@@ -125,17 +103,17 @@ impact_stats  ---> impact stats of a program, like how many events were held , t
   "donor_name": "string",
   "donor_email": "string",
   "donor_phone": "string",
-  "amount": 1000,
-  "currency": "INR",
-  "payment_gateway": "razorpay",
-  "order_id": "string",
-  "payment_id": "string | null",
+  "amount": 1000.00,
+  "message": "string",
   "payment_status": "initiated | success | failed",
+  "order_id": "string",    // Razorpay Order ID
+  "payment_id": "string",  // Razorpay Payment ID
   "created_at": "ISODate"
 }
 ```
 
-`contacts`
+## `contact_messages`
+*General inquiries.*
 
 ```json
 {
@@ -148,17 +126,16 @@ impact_stats  ---> impact stats of a program, like how many events were held , t
 }
 ```
 
-
-`impact_stats`
+## `impact_stats`
+*Counters for the homepage.*
 
 ```json
 {
   "_id": ObjectId,
-  "label": "string",
+  "title": "string",   // e.g., "Lives Impacted"
   "value": 200000,
-  "icon": "string",
-  "is_active": true,
+  "icon": "string",    // FontAwesome or Material Icon name
   "updated_at": "ISODate"
 }
-
 ```
+

@@ -10,9 +10,12 @@ class VolunteerCreate(BaseModel):
     city: Optional[str] = None
     interest_area: Optional[str] = None
 
-
+class VolunteerUpdate(BaseModel):
+    status: str
+    
 class VolunteerResponse(VolunteerCreate):
     id: str
+    status: str
     created_at: datetime
     class Config:
         from_attributes = True
