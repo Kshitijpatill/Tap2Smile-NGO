@@ -1,17 +1,98 @@
-from fastapi import APIRouter
-from app.models.event import EventResponse
+from fastapi import APIRouter, HTTPException, Depends
+from app.models.event import EventResponse, EventBase
 from app.core.database import db
 from typing import List
+from app.core.deps import get_current_user
+from bson import ObjectId
+from datetime import datetime
 
 router = APIRouter()
 
+
+# ===== ID VALIDATION =====
+def validate_object_id(id: str):
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=400, detail="Invalid Event ID format")
+    return ObjectId(id)
+
+
+# ===== GET ALL EVENTS =====
 @router.get("/", response_model=List[EventResponse])
 async def get_events():
-    cursor = db.events.find()
+    cursor = db.events.find({"is_active": True})
     events = await cursor.to_list(length=100)
-    
+
     results = []
     for e in events:
         e["id"] = str(e["_id"])
         results.append(e)
+
     return results
+
+
+# ===== CREATE EVENT (Admin only) =====
+@router.post("/", dependencies=[Depends(get_current_user)])
+async def create_event(event: EventBase):
+    event_dict = event.model_dump()
+    event_dict["created_at"] = datetime.utcnow()
+    event_dict["updated_at"] = datetime.utcnow()
+
+    result = await db.events.insert_one(event_dict)
+
+    if result.inserted_id:
+        return {
+            "success": True,
+            "message": "Event created successfully",
+            "id": str(result.inserted_id)
+        }
+
+    raise HTTPException(status_code=500, detail="Failed to create event")
+
+
+# ===== GET SINGLE EVENT =====
+@router.get("/{event_id}", response_model=EventResponse)
+async def get_single_event(event_id: str):
+
+    event_obj_id = validate_object_id(event_id)
+
+    event = await db.events.find_one({"_id": event_obj_id})
+
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    event["id"] = str(event["_id"])
+    return event
+
+
+# ===== UPDATE EVENT (Admin only) =====
+@router.put("/{event_id}", dependencies=[Depends(get_current_user)])
+async def update_event(event_id: str, event: EventBase):
+
+    event_obj_id = validate_object_id(event_id)
+
+    update_data = event.model_dump()
+    update_data["updated_at"] = datetime.utcnow()
+
+    result = await db.events.update_one(
+        {"_id": event_obj_id},
+        {"$set": update_data}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    return {"success": True, "message": "Event updated successfully"}
+
+
+# ===== DELETE EVENT (Admin only) =====
+@router.delete("/{event_id}", dependencies=[Depends(get_current_user)])
+async def delete_event(event_id: str):
+
+    event_obj_id = validate_object_id(event_id)
+
+    result = await db.events.delete_one({"_id": event_obj_id})
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    return {"success": True, "message": "Event deleted successfully"}
