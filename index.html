@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGO Website</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar */
+        header {
+            background: #0a7c6b;
+            color: #fff;
+            padding: 15px 30px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Sections */
+        section {
+            padding: 100px 30px 60px;
+            min-height: 100vh;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #0a7c6b;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        /* Home */
+        #home {
+            background: #eafaf7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #home h1 {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        /* Forms */
+        form input, form textarea, form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        form button {
+            background: #0a7c6b;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background: #065e52;
+        }
+
+        /* Footer */
+        footer {
+            background: #0a7c6b;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <h3>NGO</h3>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#programs">Programs</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#donate">Donate</a></li>
+            <li><a href="#login">Login</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<section id="home">
+    <div class="container">
+        <h1>Helping Hands NGO</h1>
+        <p>Together we can make the world a better place</p>
+    </div>
+</section>
+
+<section id="about">
+    <div class="container">
+        <h2>About Us</h2>
+        <p>
+            We are a non-profit organization working to improve lives through
+            education, healthcare, and community development.
+        </p>
+    </div>
+</section>
+
+<section id="programs">
+    <div class="container">
+        <h2>Programs</h2>
+        <div class="cards">
+            <div class="card">Education Support</div>
+            <div class="card">Healthcare Awareness</div>
+            <div class="card">Women Empowerment</div>
+        </div>
+    </div>
+</section>
+
+<section id="projects">
+    <div class="container">
+        <h2>Projects</h2>
+        <div class="cards">
+            <div class="card">School Development Project</div>
+            <div class="card">Clean Water Initiative</div>
+            <div class="card">Rural Skill Training</div>
+        </div>
+    </div>
+</section>
+
+<section id="events">
+    <div class="container">
+        <h2>Events</h2>
+        <ul>
+            <li>📅 Blood Donation Camp</li>
+            <li>📅 Tree Plantation Drive</li>
+            <li>📅 Free Medical Checkup</li>
+        </ul>
+    </div>
+</section>
+
+<section id="donate">
+    <div class="container">
+        <h2>Donate</h2>
+        <p>Your support helps us change lives.</p>
+        <button onclick="donate()">Donate Now</button>
+    </div>
+</section>
+
+<section id="login">
+    <div class="container">
+        <h2>Login</h2>
+        <form onsubmit="login(event)">
+            <input type="text" placeholder="Username" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</section>
+
+<section id="contact">
+    <div class="container">
+        <h2>Contact Us</h2>
+        <form>
+            <input type="text" placeholder="Your Name" required>
+            <input type="email" placeholder="Email" required>
+            <textarea placeholder="Message"></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 NGO Website | All Rights Reserved</p>
+</footer>
+
+<script>
+    function donate() {
+        alert("Thank you for your willingness to donate!");
+    }
+
+    function login(e) {
+        e.preventDefault();
+        alert("Login functionality is frontend only.");
+    }
+</script>
+
+</body>
+</html>
