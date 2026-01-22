@@ -109,20 +109,68 @@ Authorization: Bearer <your_access_token>
 ## 3. Events API
 **Prefix:** `/api/events`
 
-### 3.1 Get Events (Public)
+### 3.1 Get All Events (Public)
 - **Endpoint:** `GET /`
+- **Description:** Fetches a list of events.
 - **Response:**
 ```json
 [
   {
+    "id": "65a1b2c3...",
     "title": "Charity Marathon",
-    "description": "5km run.",
+    "description": "5km run for education.",
     "event_date": "2026-03-15",
     "location": "Pune",
     "is_upcoming": true,
-    "id": "..."
+    "created_at": "2026-01-22T10:00:00Z"
   }
 ]
+```
+
+### 3.2 Get Single Event (Public)
+- **Endpoint:** `GET /{event_id}`
+- **Response:** Returns the single EventResponse object (same structure as above).
+
+### 3.3 Create Event (Admin Only) 🔒
+- **Endpoint:** `POST /`
+- **Body:**
+```json
+{
+  "title": "Diwali Donation Drive",
+  "description": "Distributing sweets and clothes.",
+  "event_date": "2026-11-12",
+  "location": "Mumbai",
+  "is_upcoming": true
+}
+```
+- **Success Response:**
+```json
+{
+  "success": true,
+  "message": "Event created successfully",
+  "id": "65a1b2c3..."
+}
+```
+
+### 3.4 Update Event (Admin Only) 🔒
+- **Endpoint:** `PUT /{event_id}`
+- **Body:** (Same fields as Create)
+- **Success Response:**
+```json
+{
+  "success": true,
+  "message": "Event updated successfully"
+}
+```
+
+### 3.5 Delete Event (Admin Only) 🔒
+- **Endpoint:** `DELETE /{event_id}`
+- **Success Response:**
+```json
+{
+  "success": true,
+  "message": "Event deleted successfully"
+}
 ```
 
 ---
@@ -248,16 +296,70 @@ Authorization: Bearer <your_access_token>
 ## 8. Impact API
 **Prefix:** `/api/impact`
 
-### 8.1 Get Stats (Public)
+### 8.1 Get Impact Stats (Public)
 - **Endpoint:** `GET /`
+- **Description:** Returns the counters/statistics for the homepage.
 - **Response:**
 ```json
 [
   {
+    "id": "65a1b2c3...",
     "title": "Lives Impacted",
     "value": 200000,
     "icon": "group",
-    "id": "..."
+    "updated_at": "2026-01-22T10:00:00Z"
   }
 ]
 ```
+
+### 8.2 Get Single Impact Stat (Public)
+- **Endpoint:** `GET /{impact_id}`
+
+### 8.3 Create Impact Stat (Admin Only) 🔒
+- **Endpoint:** `POST /`
+- **Body:**
+```json
+{
+  "title": "Volunteers Joined",
+  "value": 500,
+  "icon": "diversity_3"
+}
+```
+- **Success Response:**
+```json
+{
+  "success": true,
+  "message": "Impact stat created successfully",
+  "id": "65a1b2c3..."
+}
+```
+
+### 8.4 Update Impact Stat (Admin Only) 🔒
+- **Endpoint:** `PUT /{impact_id}`
+- **Body:**
+```json
+{
+  "title": "Volunteers Joined",
+  "value": 600,
+  "icon": "diversity_3"
+}
+```
+- **Success Response:**
+```json
+{
+  "success": true,
+  "message": "Impact stat updated successfully"
+}
+```
+
+### 8.5 Delete Impact Stat (Admin Only) 🔒
+- **Endpoint:** `DELETE /{impact_id}`
+- **Success Response:**
+```json
+{
+  "success": true,
+  "message": "Impact stat deleted successfully"
+}
+```
+
+
