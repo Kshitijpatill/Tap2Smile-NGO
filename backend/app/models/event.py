@@ -8,6 +8,7 @@ class EventBase(BaseModel):
     description: str
     event_date: date
     location: Optional[str] = None
+    is_active: bool = True
     is_upcoming: bool = True
 
 

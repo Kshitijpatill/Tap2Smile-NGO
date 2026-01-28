@@ -32,7 +32,7 @@ def root():
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,8 +47,7 @@ app.include_router(impact.router, prefix="/api/impact", tags=["Impact"])
 # Form and Submission Routes
 app.include_router(volunteers.router, prefix="/api/volunteers", tags=["Volunteers"])
 app.include_router(contact.router, prefix="/api/contact", tags=["Contact"])
-app.include_router(
-    donations.router, prefix="/api/donations", tags=["Donations"])
+app.include_router(donations.router, prefix="/api/donations", tags=["Donations"])
 
 # Admin and Authentication Routes
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
@@ -73,11 +72,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    print("ERROR:", repr(exc))
     return JSONResponse(
         status_code=500,
         content={
             "success": False,
-            "message": "Something went wrong. Please try again later."
+            "message": str(exc)
         }
     )
 

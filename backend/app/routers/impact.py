@@ -19,7 +19,7 @@ def validate_object_id(id: str):
 # ===== GET ALL IMPACT STATS =====
 @router.get("/", response_model=List[ImpactResponse])
 async def get_impact():
-    cursor = db.impact.find({"is_active": True})
+    cursor = db.impact_stats.find({})
     stats = await cursor.to_list(length=100)
 
     results = []
@@ -36,7 +36,7 @@ async def create_impact(stat: ImpactBase):
     stat_dict = stat.model_dump()
     stat_dict["updated_at"] = datetime.utcnow()
 
-    result = await db.impact.insert_one(stat_dict)
+    result = await db.impact_stats.insert_one(stat_dict)
 
     if result.inserted_id:
         return {
@@ -54,7 +54,7 @@ async def get_single_impact(impact_id: str):
 
     impact_obj_id = validate_object_id(impact_id)
 
-    stat = await db.impact.find_one({"_id": impact_obj_id})
+    stat = await db.impact_stats.find_one({"_id": impact_obj_id})
 
     if not stat:
         raise HTTPException(status_code=404, detail="Impact stat not found")
@@ -72,7 +72,7 @@ async def update_impact(impact_id: str, stat: ImpactBase):
     update_data = stat.model_dump()
     update_data["updated_at"] = datetime.utcnow()
 
-    result = await db.impact.update_one(
+    result = await db.impact_stats.update_one(
         {"_id": impact_obj_id},
         {"$set": update_data}
     )
@@ -89,7 +89,7 @@ async def delete_impact(impact_id: str):
 
     impact_obj_id = validate_object_id(impact_id)
 
-    result = await db.impact.delete_one({"_id": impact_obj_id})
+    result = await db.impact_stats.delete_one({"_id": impact_obj_id})
 
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Impact stat not found")
