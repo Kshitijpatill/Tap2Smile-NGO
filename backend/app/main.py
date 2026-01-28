@@ -23,9 +23,6 @@ app = FastAPI(
     description="Backend APIs for NGO website",
 )
 
-@app.get("/favicon.ico")
-def favicon():
-    return FileResponse("favicon.ico")
 
 @app.get("/")
 def root():
