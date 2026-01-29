@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends, Body
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from app.models.volunteer import VolunteerCreate, VolunteerResponse, VolunteerUpdate
 from app.core.database import db
 from typing import List
 from app.core.deps import get_current_user
+from app.core.mail import send_admin_notification
 from datetime import datetime
 from bson import ObjectId
 
@@ -10,7 +11,7 @@ router = APIRouter()
 
 
 @router.post("/", response_model=VolunteerResponse)
-async def submit_volunteer_application(application: VolunteerCreate):
+async def submit_volunteer_application(application: VolunteerCreate, background_tasks: BackgroundTasks):
     """
     Public endpoint for users to apply as a volunteer.
     """
@@ -31,6 +32,16 @@ async def submit_volunteer_application(application: VolunteerCreate):
     new_volunteer = await db.volunteers.find_one({"_id": result.inserted_id})
     new_volunteer["id"] = str(new_volunteer["_id"])
 
+    email_subject = f"New Volunteer: {new_volunteer['name']}"
+    email_body = f"""
+    <strong>Name:</strong> {new_volunteer['name']}<br>
+    <strong>Email:</strong> {new_volunteer['email']}<br>
+    <strong>Phone:</strong> {new_volunteer['phone']}<br>
+    <strong>City:</strong> {new_volunteer['city']}<br>
+    <strong>Interest:</strong> {new_volunteer.get('interest_area', 'General')}
+    """
+
+    background_tasks.add_task(send_admin_notification,email_subject, email_body)
     return new_volunteer
 
 

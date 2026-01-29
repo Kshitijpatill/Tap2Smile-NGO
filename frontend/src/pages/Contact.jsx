@@ -227,6 +227,8 @@ export default function Contact() {
                                                         <input
                                                             required
                                                             type="tel"
+                                                            minLength={10} 
+                                                            maxLength={15}
                                                             value={volunteerData.phone}
                                                             onChange={(e) => setVolunteerData({ ...volunteerData, phone: e.target.value })}
                                                             className="w-full px-8 py-5 rounded-[1.5rem] bg-brand-background dark:bg-black/40 border border-brand-border dark:border-white/5 focus:outline-none focus:border-brand-gold dark:text-white transition-all shadow-inner"
