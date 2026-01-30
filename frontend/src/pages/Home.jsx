@@ -219,16 +219,10 @@ export default function Home() {
                                     <div className="mt-auto space-y-6">
                                         <div className="space-y-3">
                                             <div className="w-full bg-gray-100 dark:bg-white/5 rounded-full h-2.5 overflow-hidden">
-                                                <motion.div
-                                                    className="bg-brand-gold h-full rounded-full"
-                                                    initial={{ width: 0 }}
-                                                    whileInView={{ width: `${(program.raised / program.goal) * 100}%` }}
-                                                    transition={{ duration: 1, ease: "easeOut" }}
-                                                />
+                                                
                                             </div>
                                             <div className="flex justify-between text-xs font-black uppercase tracking-widest">
                                                 <span className="text-brand-text-muted">Raised ❤️</span>
-                                                <span className="text-brand-black dark:text-white">${program.raised.toLocaleString()}</span>
                                             </div>
                                         </div>
                                         <Link to={`/programs`} className="btn-primary w-full py-3.5 group text-sm">

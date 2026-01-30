@@ -5,7 +5,7 @@ from datetime import datetime, date
 
 class ImpactBase(BaseModel):
     title: str = Field(..., min_length=3)
-    value: int = Field(..., ge=0)
+    value: Optional[str] = None
     icon: Optional[str] = None
 
 

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from app.models.contact import ContactCreate, ContactResponse
 from app.core.database import db
 from typing import List
 from app.core.deps import get_current_user
+from app.core.mail import send_admin_notification, send_user_confirmation
 from datetime import datetime
 from bson import ObjectId
 
@@ -10,7 +11,7 @@ router = APIRouter()
 
 
 @router.post("/", response_model=ContactResponse)
-async def send_message(data: ContactCreate):
+async def send_message(data: ContactCreate, background_tasks: BackgroundTasks):
     """
     Public: Send a contact message.
     Prevents duplicate submissions of the exact same message.
@@ -21,24 +22,45 @@ async def send_message(data: ContactCreate):
         "subject": data.subject,
         "message": data.message
     })
-    
+
     if existing_message:
         raise HTTPException(
-            status_code=400, 
+            status_code=400,
             detail="You have already sent this message. We will get back to you soon!"
         )
 
-
     contact_dict = data.model_dump()
     contact_dict["created_at"] = datetime.utcnow()
-    
-
     result = await db.contact_messages.insert_one(contact_dict)
-    
     new_message = await db.contact_messages.find_one({"_id": result.inserted_id})
     new_message["id"] = str(new_message["_id"])
+
+    email_subject = f"Contact Query: {new_message['subject']}"
+    email_body = f"""
+    <strong>From:</strong> {new_message['name']} ({new_message['email']})<br>
+    <strong>Message:</strong><br>
+    {new_message['message']}
+    """
+    background_tasks.add_task(send_admin_notification,
+                              email_subject, email_body)
+    user_subject = "We received your message"
+    user_body = f"""
     
+    <br><br>
+    Thanks for contacting TapToSmile. We have received your query regarding: <br>
+    <em>"{new_message['subject']}"</em>
+    <br><br>
+    Our team will get back to you within 24-48 hours.
+    """
+    background_tasks.add_task(
+        send_user_confirmation,
+        new_message['email'],
+        new_message['name'],
+        user_subject,
+        user_body
+    )
     return new_message
+
 
 @router.get("/", dependencies=[Depends(get_current_user)], response_model=List[ContactResponse])
 async def get_all_messages():
@@ -49,6 +71,7 @@ async def get_all_messages():
         m["id"] = str(m["_id"])
         results.append(m)
     return results
+
 
 @router.delete("/{message_id}", dependencies=[Depends(get_current_user)])
 async def delete_message(message_id: str):
