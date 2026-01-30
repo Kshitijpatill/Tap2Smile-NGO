@@ -1,14 +1,15 @@
 
 # Tap To Smile
 
-**Tap To Smile** is a full-stack web application designed to help NGOs manage programs, projects, events, volunteers, and donations efficiently. It features a modern public-facing website and a secure administrative dashboard for internal management.
+## Live Domain
 
-##  Tech Stack
+The application is designed to be hosted at: [https://taptosmile.org](https://taptosmile.org)
+
+## Tech Stack
 
 **Frontend:**
 - React.js (Vite)
-- Tailwind CSS (Styling)  
-- Framer Motion (Animations)
+- Tailwind CSS (Styling)
 - Axios (API Integration)
 
 **Backend:**
@@ -17,85 +18,79 @@
 - JWT (Authentication)
 - FastAPI-Mail (Email Notifications)
 
-##  Prerequisites
+## Prerequisites
 
-Before you begin, ensure you have the following installed on your machine:
+Ensure the hosting server has the following installed:
 
-- [Node.js](https://nodejs.org/) (v16 or higher)
-- [Python](https://www.python.org/) (v3.10 or higher)
-- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/) (v16 or higher) - Required for building the frontend.
+- [Python](https://www.python.org/) (v3.10 or higher) - Required for running the server.
+- [Git](https://git-scm.com/) (Optional)
 
-##  Installation & Setup
+## Production Deployment Guide (For Hosting)
 
-Follow these steps to set up the project locally.
+This application uses a "Single Server / Monorepo" architecture. The React Frontend is compiled into static files and served directly by the Python Backend. This means you only need to run one server.
 
-### 1. Clone the Repository
+### Step 1: Clone & Prepare
 
 ```bash
 git clone https://github.com/Kshitijpatill/Tap2Smile-NGO.git
 cd Tap2Smile-NGO
 ```
 
-### 2. Backend Setup
-*The backend runs on port 8000.*
+### Step 2: Build the Frontend
 
-Navigate to the backend folder:
-```bash
-cd backend
-```
+We need to turn the React code into static HTML/CSS/JS files.
 
-**Create and Activate Virtual Environment:**
-
-**Windows:**
-```bash
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
-
-**Mac/Linux:**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-**Install Dependencies:**
-```bash
-pip install -r requirements.txt
-```
-
-**Configure Environment Variables:** Create a `.env` file inside the `backend/` folder and add your credentials (see the Environment Variables section below).
-
-**Run the Server:**
-```bash
-uvicorn app.main:app --reload
-```
-
-The API will be available at [http://localhost:8000](http://localhost:8000).  
-**API Documentation (Swagger):** [http://localhost:8000/docs](http://localhost:8000/docs)
-
-### 3. Frontend Setup
-*The frontend runs on port 5173.*
-
-Open a new terminal and navigate to the frontend folder:
+Navigate to the frontend folder:
 ```bash
 cd frontend
 ```
 
-**Install Dependencies:**
+**Critical Check:** Open `src/services/api.js` and ensure the API URL is set to a relative path:
+```javascript
+const API_URL = "/api";
+```
+
+Install dependencies and build:
 ```bash
 npm install
+npm run build
 ```
 
-**Run the Development Server:**
+This creates a `dist` folder.
+
+### Step 3: Configure the Backend
+
+Now set up the server that will run the app.
+
+Navigate to the backend folder:
 ```bash
-npm run dev
+cd ../backend
 ```
 
-The website will be available at [http://localhost:5173](http://localhost:5173).
+Create a virtual environment ( if not created already ):
+```bash
+python -m venv venv
+```
 
-##  Environment Variables
+Activate it:
+**Windows:**
+```bash
+.\venv\Scripts\Activate.ps1
+```
+**Mac/Linux:**
+```bash
+source venv/bin/activate
+```
 
-You must create a `.env` file in the `backend/` directory for the app to function correctly.
+Install Python dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Environment Variables (.env)
+
+Create a `.env` file inside the `backend/` folder. This is crucial for the database and emails to work.
 
 ```env
 # Database Configuration
@@ -109,31 +104,57 @@ MAIL_PORT=587
 MAIL_SERVER=smtp.gmail.com
 ```
 
-##  How to Setup Email Service (Gmail)
+(See "How to Setup Email" section below for generating the App Password)
 
-To enable email notifications for Admin alerts, you need a **Google App Password**.
+### Step 5: Run the Server
 
-### Step 1: Enable 2-Step Verification
-1. Go to your [Google Account Security Page](https://myaccount.google.com/security)
-2. Scroll to the "How you sign in to Google" section
-3. Click on **2-Step Verification**
-4. If it is OFF, follow the steps to turn it ON
+Start the application. This command runs both the API and the Website.
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
 
-### Step 2: Generate App Password
-1. Once 2-Step Verification is ON, search for **"App passwords"** in the top search bar of the Security page
-2. **App name:** Type `Tap2Smile`
+Access the Website: Open `http://<your-server-ip>:8000` (or https://taptosmile.org if domain is configured).  
+Access API Docs: `https://taptosmile.org/api/docs`
+
+## Local Development Setup (For Developers)
+
+If you want to run the Frontend and Backend separately for development:
+
+### 1. Backend (Port 8000)
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # or .\venv\Scripts\Activate on Windows
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+### 2. Frontend (Port 5173)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+**Note:** In `src/services/api.js`, change `API_URL` back to `"http://localhost:8000/api"` for local dev.
+
+## How to Setup Email Service (Gmail)
+
+To enable email notifications (for Volunteer alerts, Donation receipts, etc.), you need a Google App Password.
+
+**Enable 2-Step Verification:** Go to [Google Account Security](https://myaccount.google.com/security) > "2-Step Verification" > Turn ON.
+
+**Generate App Password:**
+1. Search for "App passwords" in the Security page
+2. App name: `Tap2Smile`
 3. Click **Create**
-4. Google will display a **16-character code** (e.g., `abcd efgh ijkl mnop`)
-5. **Copy this code.** This is your `MAIL_PASSWORD` for the `.env` file
+4. Copy the **16-character code**
+5. Paste it: Put this code into your `.env` file as `MAIL_PASSWORD`
 
-<!-- ##  Features
+## Contributing
 
-- **Admin Dashboard:** Secure login to manage content
-- **Program Management:** Create, update, and delete NGO programs
-- **Volunteer System:** Accept applications and receive email alerts
-- **Donations:** Ledger system to track incoming donations
-- **Event Management:** Showcase upcoming and past events
-- **Impact Stats:** Dynamic counters for homepage statistics -->
-
-
-
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature-branch`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature-branch`)
+5. Open a Pull Request
