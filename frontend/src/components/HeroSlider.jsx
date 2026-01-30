@@ -48,7 +48,7 @@ export default function HeroSlider() {
     const prevSlide = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
 
     return (
-        <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-brand-background dark:bg-[#0A0A0A] px-4 md:px-0">
+        <section className="relative h-[85vh] md:h-[90vh] flex items-center overflow-hidden bg-brand-background dark:bg-[#0A0A0A]">
             {/* Background Decorative Elements */}
             <div className="absolute inset-0 z-0 opacity-10 dark:opacity-5 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-gold rounded-full blur-[120px]" />
@@ -63,10 +63,10 @@ export default function HeroSlider() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center"
+                        className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
                     >
                         {/* Text Content */}
-                        <div className="order-2 lg:order-1 flex flex-col items-start gap-6 md:gap-8 text-center lg:text-left">
+                        <div className="order-2 lg:order-1 flex flex-col items-start gap-8">
                             <motion.div
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -101,7 +101,7 @@ export default function HeroSlider() {
                                 initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
                                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                                 transition={{ duration: 0.8, type: "spring", damping: 20 }}
-                                className="relative z-10 w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px]"
+                                className="relative z-10 w-full max-w-[500px]"
                             >
                                 {/* Main Image with Cutout Mask or Shield Shape */}
                                 <div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] shadow-2xl border-[12px] border-white dark:border-zinc-800 transition-colors">

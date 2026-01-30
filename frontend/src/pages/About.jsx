@@ -25,7 +25,7 @@ export default function About() {
     return (
         <div className="dark:bg-[#0A0A0A] transition-colors duration-500">
             {/* Header */}
-            <section className="relative h-[35vh] md:h-[40vh] border-b border-white/5 text-white overflow-hidden flex items-center"> 
+            <section className="bg-brand-black dark:bg-zinc-900 border-b border-white/5 text-white py-24 md:py-32 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none" />
                 <div className="container-custom text-center relative z-10">
                     <motion.span
