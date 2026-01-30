@@ -3,7 +3,7 @@ from app.models.volunteer import VolunteerCreate, VolunteerResponse, VolunteerUp
 from app.core.database import db
 from typing import List
 from app.core.deps import get_current_user
-from app.core.mail import send_admin_notification
+from app.core.mail import send_admin_notification, send_user_confirmation
 from datetime import datetime
 from bson import ObjectId
 
@@ -42,6 +42,21 @@ async def submit_volunteer_application(application: VolunteerCreate, background_
     """
 
     background_tasks.add_task(send_admin_notification,email_subject, email_body)
+    
+    user_subject = "Welcome to the Team! 🤝"
+    user_body = f"""
+    Thank you for applying to volunteer with TapToSmile!
+    <br><br>
+    We have received your application for <strong>{new_volunteer.get('interest_area', 'General Support')}</strong>. 
+    Our coordinator will review your profile and reach out to you soon.
+    """
+    background_tasks.add_task(
+        send_user_confirmation,
+        new_volunteer['email'],
+        new_volunteer['name'],
+        user_subject,
+        user_body
+    )
     return new_volunteer
 
 

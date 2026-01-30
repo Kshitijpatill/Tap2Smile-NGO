@@ -23,8 +23,6 @@ async def send_admin_notification(subject: str, body: str):
     """
     Sends a PERSONALIZED email to each Superadmin found in the database.
     """
-
-    # 1. Fetch all superadmins
     cursor = db.users.find({"role": "superadmin"})
     superadmins = await cursor.to_list(length=100)
     
@@ -70,6 +68,45 @@ async def send_admin_notification(subject: str, body: str):
 
         try:
             await fm.send_message(message)
-            print(f"✅ Notification sent to {admin_name} ({admin_email})")
+            print(f"✅ Notification sent to Admin: {admin_name}")
         except Exception as e:
-            print(f"❌ Failed to send to {admin_name}: {e}")
+            print(f"❌ Failed to send to Admin {admin_name}: {e}")
+
+async def send_user_confirmation(user_email: str, user_name: str, subject: str, body: str):
+    """
+    Sends a 'Thank You' confirmation email to the User (Donor/Volunteer/Contact).
+    """
+    if not user_email:
+        return
+
+    html = f"""
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+        <h2 style="color: #D4AF37;">TapToSmile</h2>
+        
+        <p>Hello <strong>{user_name}</strong>,</p>
+        
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; font-size: 16px;">
+            {body}
+        </div>
+        <br>
+        <p>Best Regards,<br><strong>The TapToSmile Team</strong></p>
+        <hr style="border: 0; border-top: 1px solid #eee;">
+        <p style="font-size: 11px; color: #888;">
+            Thank you for supporting our mission. If you have questions, reply to this email.
+        </p>
+    </div>
+    """
+
+    message = MessageSchema(
+        subject=subject,
+        recipients=[user_email],
+        body=html,
+        subtype=MessageType.html
+    )
+
+    fm = FastMail(conf)
+    try:
+        await fm.send_message(message)
+        print(f"✅ Confirmation sent to User: {user_name}")
+    except Exception as e:
+        print(f"❌ Failed to send to User {user_name}: {e}")

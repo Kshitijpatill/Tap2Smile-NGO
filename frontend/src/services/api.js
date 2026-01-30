@@ -100,7 +100,11 @@ export const api = {
     },
     submitDonation: async (data) => {
         const payload = {
+            donor_name: data.name,
+            donor_email: data.email,
+            donor_phone: data.phone,
             amount: parseFloat(data.amount),
+            message: "Website Donation Pledge"
         };
         return handleResponse(axios.post(`${API_URL}/donations/`, payload));
     }

@@ -1,21 +1,17 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, List
-from datetime import datetime, date
-
+from typing import Optional
+from datetime import datetime
 
 class DonationCreate(BaseModel):
-    donor_name: Optional[str] = None
-    donor_email: Optional[EmailStr] = None
-    donor_phone: Optional[str] = None
+    donor_name: str = Field(..., min_length=2)
+    donor_email: EmailStr
+    donor_phone: str = Field(..., min_length=10, max_length=15)
     amount: float = Field(..., gt=0)
     message: Optional[str] = None
 
-
 class DonationResponse(DonationCreate):
     id: str
-    payment_id: Optional[str] = None
-    order_id: Optional[str] = None
-    payment_status: str = "pending"
+    status: str  # pending, received, cancelled
     created_at: datetime
 
     class Config:

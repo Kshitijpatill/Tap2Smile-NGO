@@ -3,7 +3,7 @@ from app.models.contact import ContactCreate, ContactResponse
 from app.core.database import db
 from typing import List
 from app.core.deps import get_current_user
-from app.core.mail import send_admin_notification
+from app.core.mail import send_admin_notification, send_user_confirmation
 from datetime import datetime
 from bson import ObjectId
 
@@ -41,8 +41,24 @@ async def send_message(data: ContactCreate, background_tasks: BackgroundTasks):
     <strong>Message:</strong><br>
     {new_message['message']}
     """
-    background_tasks.add_task(send_admin_notification,email_subject, email_body)
+    background_tasks.add_task(send_admin_notification,
+                              email_subject, email_body)
+    user_subject = "We received your message"
+    user_body = f"""
     
+    <br><br>
+    Thanks for contacting TapToSmile. We have received your query regarding: <br>
+    <em>"{new_message['subject']}"</em>
+    <br><br>
+    Our team will get back to you within 24-48 hours.
+    """
+    background_tasks.add_task(
+        send_user_confirmation,
+        new_message['email'],
+        new_message['name'],
+        user_subject,
+        user_body
+    )
     return new_message
 
 
