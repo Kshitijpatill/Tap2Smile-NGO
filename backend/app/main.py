@@ -1,12 +1,11 @@
 import os
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import test_mongodb_connection
 
-# Import Routers
 from app.routers import (
     programs,
     projects,
@@ -25,18 +24,14 @@ app = FastAPI(
     openapi_url="/api/openapi.json"
 )
 
-# --- 1. CORS MIDDLEWARE (Crucial for Local Development) ---
-# Even if production serves both from the same port, you need this
-# to allow 'localhost:5173' to talk to 'localhost:8000' during testing.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change this to your domain in production if needed
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  
+    allow_headers=["*"], 
 )
 
-# --- 2. API ROUTES ---
 app.include_router(programs.router, prefix="/api/programs", tags=["Programs"])
 app.include_router(projects.router, prefix="/api/projects", tags=["Projects"])
 app.include_router(events.router, prefix="/api/events", tags=["Events"])
@@ -48,54 +43,68 @@ app.include_router(
     donations.router, prefix="/api/donations", tags=["Donations"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 
-# --- 3. EXCEPTION HANDLERS ---
-
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     errors = {}
     for err in exc.errors():
-        # Get the field name that failed validation
-        field = err["loc"][-1]
+        field = err["loc"][-1] if err["loc"] else "unknown"
         errors[field] = err["msg"]
-    return JSONResponse(status_code=422, content={"success": False, "message": "Validation failed", "errors": errors})
+
+    return JSONResponse(
+        status_code=422,
+        content={"success": False,
+                 "message": "Validation failed", "errors": errors}
+    )
 
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    print(f"ERROR: {repr(exc)}")
-    return JSONResponse(status_code=500, content={"success": False, "message": "Internal Server Error"})
+    print(f"⚠️ INTERNAL ERROR: {repr(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={"success": False, "message": "Internal Server Error"}
+    )
 
 
 @app.on_event("startup")
 async def startup_db_client():
     await test_mongodb_connection()
 
-# --- 4. SERVE FRONTEND (SPA) ---
-# Correctly locate the 'dist' folder relative to this file
-# Current file is in /app/main.py, so we go up one level (..) to find /dist
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DIST_DIR = os.path.join(BASE_DIR, "../dist")
+DIST_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../frontend/dist"))
+
 
 if os.path.isdir(DIST_DIR):
-    # A. Mount Assets (CSS, JS, Images)
-    app.mount(
-        "/assets", StaticFiles(directory=os.path.join(DIST_DIR, "assets")), name="assets")
+    # A. Mount 'assets' folder (CSS, JS, Images)
+    # This makes http://domain.com/assets/index.js work
+    assets_path = os.path.join(DIST_DIR, "assets")
+    if os.path.isdir(assets_path):
+        app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 
-    # B. Catch-All Route for React
+    # B. Serve Root (Home Page)
+    @app.get("/")
+    async def serve_root():
+        return FileResponse(os.path.join(DIST_DIR, "index.html"))
+
+    # C. Catch-All for React Router
+    # Handles paths like /about, /donate, /favicon.ico, /vite.svg
     @app.get("/{full_path:path}")
     async def serve_frontend(full_path: str):
-        # Allow API calls to pass through (prevent 404 on API)
+        # 1. API Safety Check: If it starts with 'api', return 404 JSON, not HTML
         if full_path.startswith("api"):
             return JSONResponse(status_code=404, content={"message": "API endpoint not found"})
 
-        # Check if a specific file exists (e.g., favicon.ico, logo.png)
+        # 2. Check if a specific file exists (e.g., favicon.ico, robot.txt)
         file_path = os.path.join(DIST_DIR, full_path)
         if os.path.exists(file_path) and os.path.isfile(file_path):
             return FileResponse(file_path)
 
-        # Otherwise, return index.html so React Router handles the page
+        # 3. Default: Return index.html (SPA Routing)
         return FileResponse(os.path.join(DIST_DIR, "index.html"))
+
 else:
-    print(
-        f"⚠️ WARNING: 'dist' folder not found at {DIST_DIR}. Frontend will not serve.")
+    print("⚠️ WARNING: 'dist' folder NOT FOUND. Frontend will not be served.")
+    print(f"   Expected location: {DIST_DIR}")
+    print("   Please run 'npm run build' in the frontend folder.")

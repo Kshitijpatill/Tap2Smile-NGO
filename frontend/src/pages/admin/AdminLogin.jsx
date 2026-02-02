@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, Mail, AlertCircle } from "lucide-react";
-import * as api from "./api";
+import { api } from "../../services/api";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -22,15 +22,16 @@ export default function AdminLogin() {
     }
 
     try {
-      // Authenticate with backend
-      await api.loginAdmin(email, password);
-      
-      // Store admin session
-      sessionStorage.setItem("adminLoggedIn", "true");
-      
-      navigate("/admin/dashboard");
+      const res = await api.adminLogin(email, password);
+
+      if (res.success) {
+        sessionStorage.setItem("adminLoggedIn", "true");
+        navigate("/admin/dashboard");
+      } else {
+        setError("Invalid credentials");
+      }
     } catch (err) {
-      setError(err.message || "Login failed. Please try again.");
+      setError("Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -39,7 +40,6 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-block p-3 bg-yellow-600 rounded-xl mb-4">
             <span className="text-4xl">🎯</span>
@@ -48,13 +48,11 @@ export default function AdminLogin() {
           <p className="text-gray-400">Admin Portal</p>
         </div>
 
-        {/* Login Card */}
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
           <h2 className="text-2xl font-bold text-white mb-6 text-center">
             Admin Login
           </h2>
 
-          {/* Error Message */}
           {error && (
             <div className="mb-4 p-4 bg-red-900 border border-red-700 rounded-lg flex items-center gap-3">
               <AlertCircle size={20} className="text-red-400 flex-shrink-0" />
@@ -63,7 +61,6 @@ export default function AdminLogin() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Email
@@ -84,7 +81,6 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Password
@@ -105,7 +101,6 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
@@ -114,14 +109,7 @@ export default function AdminLogin() {
               {loading ? "Logging in..." : "Login to Dashboard"}
             </button>
           </form>
-
-          {/* Info Message */}
-          <p className="text-center text-gray-400 text-xs mt-6">
-            Admin Panel - Restricted Access
-          </p>
         </div>
-
-        {/* Footer Note */}
         <p className="text-center text-gray-500 text-xs mt-8">
           © 2026 TapToSmile NGO. All rights reserved.
         </p>
