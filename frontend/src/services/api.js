@@ -49,7 +49,7 @@ const handleResponse = async (request) => {
 export const api = {
     adminLogin: async (email, password) => {
         const formData = new FormData();
-        formData.append("username", email); // Backend expects 'username'
+        formData.append("username", email);
         formData.append("password", password);
 
         try {
@@ -92,6 +92,9 @@ export const api = {
             return { success: false, data: [] };
         }
     },
+    createProgram: async (data) => handleResponse(axios.post(`${API_URL}/programs/`, data, { headers: getAuthHeader() })),
+    updateProgram: async (id, data) => handleResponse(axios.patch(`${API_URL}/programs/${id}`, data, { headers: getAuthHeader() })),
+    deleteProgram: async (id) => handleResponse(axios.delete(`${API_URL}/programs/${id}`, { headers: getAuthHeader() })),
     getEvents: async () => {
         try {
             const res = await axios.get(`${API_URL}/events/`);
@@ -104,9 +107,22 @@ export const api = {
             return { success: false, data: [] };
         }
     },
+    createEvent: async (data) => handleResponse(axios.post(`${API_URL}/events/`, data, { headers: getAuthHeader() })),
+    updateEvent: async (id, data) => handleResponse(axios.patch(`${API_URL}/events/${id}`, data, { headers: getAuthHeader() })),
+    deleteEvent: async (id) => handleResponse(axios.delete(`${API_URL}/events/${id}`, { headers: getAuthHeader() })),
+
     getProjects: async () => {
         return handleResponse(axios.get(`${API_URL}/projects/`));
     },
+    createProject: async (data) => handleResponse(axios.post(`${API_URL}/projects/`, data, { headers: getAuthHeader() })),
+    updateProject: async (id, data) => handleResponse(axios.patch(`${API_URL}/projects/${id}`, data, { headers: getAuthHeader() })),
+    deleteProject: async (id) => handleResponse(axios.delete(`${API_URL}/projects/${id}`, { headers: getAuthHeader() })),
+
+    getImpact: async () => handleResponse(axios.get(`${API_URL}/impact/`)),
+    createImpact: async (data) => handleResponse(axios.post(`${API_URL}/impact/`, data, { headers: getAuthHeader() })),
+    updateImpact: async (id, data) => handleResponse(axios.patch(`${API_URL}/impact/${id}`, data, { headers: getAuthHeader() })),
+    deleteImpact: async (id) => handleResponse(axios.delete(`${API_URL}/impact/${id}`, { headers: getAuthHeader() })),
+
 
     submitVolunteer: async (data) => {
         const payload = {
@@ -118,9 +134,16 @@ export const api = {
         };
         return handleResponse(axios.post(`${API_URL}/volunteers/`, payload));
     },
+    getAdminVolunteers: async () => handleResponse(axios.get(`${API_URL}/volunteers/`, { headers: getAuthHeader() })),
+    updateVolunteerStatus: async (id, status) => handleResponse(axios.patch(`${API_URL}/volunteers/${id}/status`, { status }, { headers: getAuthHeader() })),
+
     submitContact: async (data) => {
         return handleResponse(axios.post(`${API_URL}/contact/`, data));
     },
+    getAdminMessages: async () => handleResponse(axios.get(`${API_URL}/contact/`, { headers: getAuthHeader() })),
+    deleteMessage: async (id) => handleResponse(axios.delete(`${API_URL}/contact/${id}`, { headers: getAuthHeader() })),
+
+
     submitDonation: async (data) => {
         const payload = {
             donor_name: data.name,
@@ -131,14 +154,14 @@ export const api = {
         };
         return handleResponse(axios.post(`${API_URL}/donations/`, payload));
     },
-    
+
     getAdminDonations: async () => {
         return handleResponse(axios.get(`${API_URL}/donations/`, { headers: getAuthHeader() }));
     },
 
     updateDonationStatus: async (id, status) => {
-        return handleResponse(axios.patch(`${API_URL}/donations/${id}/status`, 
-            { status: status }, 
+        return handleResponse(axios.patch(`${API_URL}/donations/${id}/status`,
+            { status: status },
             { headers: getAuthHeader() }
         ));
     }

@@ -38,8 +38,11 @@ export default function App() {
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
-
+          
           <Route path="dashboard" element={<AdminDashboard />} />
+
+          <Route path=":section" element={<AdminDashboard />} />
+          
         </Route>
       </Routes>
     </Router>
