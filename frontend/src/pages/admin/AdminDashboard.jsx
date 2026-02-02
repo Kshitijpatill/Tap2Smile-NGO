@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Plus,
   LayoutDashboard,
@@ -11,11 +11,11 @@ import {
   Heart,
   BarChart3,
   AlertCircle,
-  Loader2, // Imported Loader Icon
+  Loader2, // Import Loader
 } from "lucide-react";
 import { api } from "../../services/api";
 
-// Import Components
+// Ensure these paths match exactly where you put your files
 import AdminStats from "./Dashboard_Components/AdminStats";
 import AdminForm from "./Dashboard_Components/AdminForm";
 import AdminList from "./Dashboard_Components/AdminList";
@@ -23,9 +23,11 @@ import AdminOverview from "./Dashboard_Components/AdminOverview";
 
 export default function AdminDashboard() {
   const { section = "dashboard" } = useParams();
+  const navigate = useNavigate();
 
+  // 1. DEFAULT LOADING TO TRUE (Prevents empty flash)
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); // Default to true to prevent initial crash
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [editingItem, setEditingItem] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -185,43 +187,36 @@ export default function AdminDashboard() {
     return <NotFound section={section} />;
   }
 
-  // UPDATED: UseEffect with strict state clearing
+  // Fetch Data
   useEffect(() => {
-    // 1. Force Loading State immediately when section changes
+    // Reset state immediately on mount (Safety)
+    setData([]);
     setLoading(true);
-    setData([]); // Clear old data to prevent crashes
-    setError("");
-    setEditingItem(null);
-    setShowAddForm(false);
-    setFormData({});
 
-    // 2. Fetch New Data
-    const loadData = async () => {
+    const fetchData = async () => {
       try {
         const result = await currentSection.endpoint();
         setData(Array.isArray(result.data) ? result.data : result.data || []);
       } catch (err) {
+        console.error("Fetch error:", err);
         setError("Failed to load data.");
       } finally {
         setLoading(false);
       }
     };
 
-    if (currentSection) {
-      loadData();
-    }
-  }, [section]); // Re-run whenever 'section' URL param changes
+    fetchData();
+  }, [section]); // Dependency: Runs every time URL changes
 
-  // CRUD Handlers...
+  // CRUD Handlers
   const handleCreate = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       await currentSection.createFn(formData);
-      // Re-fetch data to stay in sync
+      // Re-fetch to sync
       const result = await currentSection.endpoint();
       setData(Array.isArray(result.data) ? result.data : result.data || []);
-
       setFormData({});
       setShowAddForm(false);
     } catch {
@@ -236,10 +231,8 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       await currentSection.updateFn(editingItem.id, formData);
-      // Re-fetch
       const result = await currentSection.endpoint();
       setData(Array.isArray(result.data) ? result.data : result.data || []);
-
       setEditingItem(null);
       setFormData({});
     } catch {
@@ -254,7 +247,6 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       await currentSection.deleteFn(id);
-      // Re-fetch
       const result = await currentSection.endpoint();
       setData(Array.isArray(result.data) ? result.data : result.data || []);
     } catch {
@@ -265,8 +257,12 @@ export default function AdminDashboard() {
   };
 
   // --- RENDER ---
+
+  // 2. THE SILVER BULLET: key={section}
+  // This forces React to destroy the old component and create a new one
+  // whenever you click a sidebar link. No stale data = No crash.
   return (
-    <div className="flex-1 overflow-y-auto max-w-7xl mx-auto p-8">
+    <div key={section} className="flex-1 overflow-y-auto max-w-7xl mx-auto p-8">
       {/* Header */}
       <div className="mb-8 flex items-center gap-3">
         <div className="text-4xl">{currentSection.emoji}</div>
@@ -281,7 +277,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* CRITICAL FIX: Don't render Stats/List until loading is done */}
+      {/* Loading State */}
       {loading ? (
         <div className="flex flex-col items-center justify-center h-64 text-gray-500">
           <Loader2 className="w-10 h-10 animate-spin mb-4 text-yellow-600" />
