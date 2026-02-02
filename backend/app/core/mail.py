@@ -1,9 +1,11 @@
 import os
+import asyncio
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from pydantic import EmailStr
 from typing import List
 from app.core.database import db 
 from dotenv import load_dotenv
+from email_validator import validate_email, EmailNotValidError
 
 load_dotenv()
 
@@ -18,6 +20,18 @@ conf = ConnectionConfig(
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=True
 )
+
+async def verify_email_address(email: str) -> bool:
+    """
+    Checks if an email has a valid syntax AND a valid domain (MX record).
+    This prevents sending to 'gmail.com' typos which cause 48-hour retry loops.
+    """
+    try:
+        validate_email(email, check_deliverability=True)
+        return True
+    except EmailNotValidError as e:
+        print(f"⚠️ Invalid Email Detected: {email} - {str(e)}")
+        return False
 
 async def send_admin_notification(subject: str, body: str):
     """
@@ -74,9 +88,22 @@ async def send_admin_notification(subject: str, body: str):
 
 async def send_user_confirmation(user_email: str, user_name: str, subject: str, body: str):
     """
-    Sends a 'Thank You' confirmation email to the User (Donor/Volunteer/Contact).
+    Sends a confirmation email to the User with:
+    1. DNS Validation (prevents bouncing)
+    2. 3 Retry Attempts (for connection issues)
+    3. Admin Alert on Failure
     """
     if not user_email:
+        return
+
+    is_valid = await verify_email_address(user_email)
+    if not is_valid:
+
+        print(f"🚫 Skipping send to invalid email: {user_email}")
+        await send_admin_notification(
+            subject="Delivery Failed: Invalid User Email",
+            body=f"User <strong>{user_name}</strong> provided an invalid email: <strong>{user_email}</strong>.<br>The system blocked the sending attempt to prevent bounces."
+        )
         return
 
     html = f"""
@@ -105,8 +132,20 @@ async def send_user_confirmation(user_email: str, user_name: str, subject: str, 
     )
 
     fm = FastMail(conf)
-    try:
-        await fm.send_message(message)
-        print(f"✅ Confirmation sent to User: {user_name}")
-    except Exception as e:
-        print(f"❌ Failed to send to User {user_name}: {e}")
+
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            await fm.send_message(message)
+            print(f"✅ Confirmation sent to User: {user_name}")
+            return 
+        except Exception as e:
+            print(f"⚠️ Attempt {attempt + 1}/{max_retries} failed for {user_email}: {e}")
+            if attempt < max_retries - 1:
+                await asyncio.sleep(2)
+            else:
+                print(f"❌ All attempts failed for {user_email}")
+                await send_admin_notification(
+                    subject="Delivery Failed: Email Unreachable",
+                    body=f"Failed to send confirmation to <strong>{user_name}</strong> ({user_email}) after 3 attempts.<br>Error: {str(e)}"
+                )
