@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
-import * as api from "./api";
+import * as api from "../../services/api";
 
 export default function AdminDevLogin() {
   const navigate = useNavigate();

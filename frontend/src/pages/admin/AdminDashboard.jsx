@@ -5,7 +5,7 @@ import {
   CheckCircle, Clock, MapPin, Phone, AlertCircle, Mail, Calendar,
   BookOpen, BarChart3, Users, Briefcase
 } from "lucide-react";
-import * as api from "./api";
+import * as api from "../../services/api";
 
 export default function AdminDashboard() {
   const { section = "programs" } = useParams();
