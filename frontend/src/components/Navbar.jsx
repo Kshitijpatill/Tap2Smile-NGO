@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../lib/utils";
-import logo from "../assets/logo.png";
+import logo from "../../assets/logo.png";
 import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
