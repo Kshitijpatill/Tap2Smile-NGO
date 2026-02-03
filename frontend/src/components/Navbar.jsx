@@ -11,6 +11,7 @@ const navLinks = [
     { name: "About Us", href: "/about" },
     { name: "Programs", href: "/programs" },
     { name: "Events", href: "/events" },
+    { name: "CSR", href: "/csr" },
     { name: "Contact", href: "/contact" },
 ];
 
@@ -35,12 +36,13 @@ export default function Navbar() {
         <nav
             className={cn(
                 "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-                scrolled ? "glass shadow-sm py-2" : "bg-transparent py-4"
+                scrolled ? "glass shadow-sm py-4 md:py-5" : "bg-transparent py-6 md:py-8"
             )}
+            style={{ top: scrolled ? 0 : 'auto' }}
         >
             <div className="container-custom flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-2 group">
-                    <img src={logo} alt="TapToSmile" className="h-12 w-auto transition-transform group-hover:scale-105" />
+                    <img src={logo} alt="TapToSmile" className="h-12 md:h-16 w-auto drop-shadow-md transition-transform group-hover:scale-105" />
                 </Link>
 
                 {/* Desktop Nav */}
@@ -51,18 +53,22 @@ export default function Navbar() {
                                 key={link.name}
                                 to={link.href}
                                 className={cn(
-                                    "text-sm font-medium transition-colors hover:text-brand-gold",
+                                    "text-base font-bold transition-all hover:text-brand-gold relative group/link",
                                     location.pathname === link.href ? "text-brand-gold" : "text-brand-text dark:text-gray-300"
                                 )}
                             >
                                 {link.name}
+                                <span className={cn(
+                                    "absolute -bottom-1 left-0 h-0.5 bg-brand-gold transition-all duration-300",
+                                    location.pathname === link.href ? "w-full" : "w-0 group-hover/link:w-full"
+                                )} />
                             </Link>
                         ))}
                     </div>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
-                        <Link to="/donate" className="btn-primary flex items-center gap-2 px-5 py-2">
-                            <Heart className="w-4 h-4" />
+                        <Link to="/donate" className="btn-primary flex items-center gap-2 px-8 py-3 text-base">
+                            <Heart className="w-5 h-5" />
                             Donate
                         </Link>
                     </div>
