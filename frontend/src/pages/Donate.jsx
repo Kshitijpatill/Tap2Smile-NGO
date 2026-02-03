@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Heart, CreditCard, ShieldCheck, ArrowRight, CheckCircle2, DollarSign } from "lucide-react";
+import { Heart, CreditCard, ShieldCheck, ArrowRight, CheckCircle2, IndianRupee } from "lucide-react";
 import Section from "../components/Section";
 import { api } from "../services/api";
 import { cn } from "../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import PageHeader from "../components/PageHeader";
 
 const donationTiers = [
     { amount: 10, label: "Provide a warm meal", icon: "🍛" },
@@ -33,15 +34,10 @@ export default function Donate() {
 
     return (
         <div className="dark:bg-[#0A0A0A] transition-colors duration-500 min-h-screen">
-            <section className="bg-brand-black dark:bg-zinc-900 border-b border-white/5 text-white py-24 md:py-32 relative overflow-hidden text-center">
-                <div className="container-custom relative z-10">
-                    <span className="text-brand-gold font-black uppercase tracking-[0.3em] text-xs mb-4 block">Direct Impact</span>
-                    <h1 className="text-4xl md:text-7xl font-black mb-8 leading-tight text-white">Every Cent <span className="text-brand-gold">Counts</span></h1>
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        Your generous contribution directly fuels our mission to feed, educate, and house those in need. 100% of public donations go to projects.
-                    </p>
-                </div>
-            </section>
+            <PageHeader
+                title={<>Every Cent <span className="text-brand-gold">Counts</span></>}
+                subtitle="Your generous contribution directly fuels our mission to feed, educate, and house those in need. 100% of public donations go to projects."
+            />
 
             <Section className="bg-brand-background dark:bg-[#0A0A0A]">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
@@ -55,17 +51,17 @@ export default function Donate() {
                                         key={tier.amount}
                                         onClick={() => { setSelectedTier(tier.amount); setAmount(""); }}
                                         className={cn(
-                                            "p-8 rounded-[2.5rem] border-2 text-left transition-all relative overflow-hidden group",
+                                            "p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border-2 text-left transition-all relative overflow-hidden group",
                                             selectedTier === tier.amount
                                                 ? "bg-brand-gold border-brand-gold shadow-2xl scale-105"
-                                                : "bg-white dark:bg-zinc-900 border-brand-border dark:border-white/5 hover:border-brand-gold/50"
+                                                : "bg-white dark:bg-zinc-900 border-brand-border dark:border-white/5 hover:border-brand-gold/50 hover:shadow-lg"
                                         )}
                                     >
-                                        <span className="text-4xl mb-6 block group-hover:scale-125 transition-transform">{tier.icon}</span>
+                                        <span className="text-3xl md:text-4xl mb-6 block group-hover:scale-125 transition-transform">{tier.icon}</span>
                                         <p className={cn(
-                                            "text-2xl font-black mb-2",
+                                            "text-xl md:text-2xl font-black mb-2",
                                             selectedTier === tier.amount ? "text-white" : "dark:text-white"
-                                        )}>${tier.amount}</p>
+                                        )}>₹{tier.amount}</p>
                                         <p className={cn(
                                             "text-xs font-bold uppercase tracking-widest",
                                             selectedTier === tier.amount ? "text-white/80" : "text-brand-text-muted dark:text-gray-500"
@@ -96,14 +92,14 @@ export default function Donate() {
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="bg-white dark:bg-zinc-900 rounded-[3.5rem] shadow-2xl border border-brand-border dark:border-white/5 p-12 text-center"
+                                    className="bg-white dark:bg-zinc-900 rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl border border-brand-border dark:border-white/5 p-8 md:p-12 text-center"
                                 >
                                     <div className="w-24 h-24 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-8">
                                         <CheckCircle2 className="w-12 h-12 text-green-600 dark:text-green-400" />
                                     </div>
                                     <h3 className="text-4xl font-black mb-6 dark:text-white">Thank You!</h3>
                                     <p className="text-brand-text-muted dark:text-gray-400 text-xl mb-12 max-w-md mx-auto leading-relaxed">
-                                        Your contribution of <span className="text-brand-gold font-black">${selectedTier || amount}</span> has been received. You're making a real difference.
+                                        Your contribution of <span className="text-brand-gold font-black">₹{selectedTier || amount}</span> has been received. You're making a real difference.
                                     </p>
                                     <button
                                         onClick={() => setIsSuccess(false)}
@@ -117,13 +113,13 @@ export default function Donate() {
                                     onSubmit={handleDonate}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="bg-white dark:bg-zinc-900 rounded-[3.5rem] shadow-2xl border border-brand-border dark:border-white/5 overflow-hidden"
+                                    className="bg-white dark:bg-zinc-900 rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl border border-brand-border dark:border-white/5 overflow-hidden"
                                 >
-                                    <div className="p-10 md:p-16 space-y-12">
+                                    <div className="p-8 md:p-16 space-y-10 md:space-y-12">
                                         <div className="space-y-6">
                                             <h3 className="text-2xl font-black dark:text-white">Choose Donation Amount</h3>
                                             <div className="relative">
-                                                <DollarSign className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-gold h-6 w-6" />
+                                                <IndianRupee className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-gold h-6 w-6" />
                                                 <input
                                                     type="number"
                                                     placeholder="Other Amount"
@@ -157,7 +153,7 @@ export default function Donate() {
                                             disabled={isProcessing || (!amount && !selectedTier)}
                                             className="btn-primary w-full py-6 text-xl flex items-center justify-center gap-4 shadow-brand-gold/20"
                                         >
-                                            {isProcessing ? "Processing Security..." : `Safely Donate $${selectedTier || amount || "0"}`}
+                                            {isProcessing ? "Processing Security..." : `Safely Donate ₹${selectedTier || amount || "0"}`}
                                             {!isProcessing && <Heart className="w-6 h-6 fill-white" />}
                                         </button>
 
