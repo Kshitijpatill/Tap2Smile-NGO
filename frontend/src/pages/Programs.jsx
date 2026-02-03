@@ -1,54 +1,92 @@
-import { Palette, Activity, Heart, GraduationCap, Megaphone, ArrowRight, Utensils } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { 
+    Palette, Activity, Heart, GraduationCap, Megaphone, ArrowRight, Utensils, 
+    BookOpen, Home, Loader2, AlertCircle, HandHelping 
+} from "lucide-react";
 import Section from "../components/Section";
 import PageHeader from "../components/PageHeader";
 import { cn } from "../lib/utils";
+import { api } from "../services/api";
 
-const programsData = [
-    {
-        id: "kala",
-        title: "Program Kāla (Art)",
-        description: "Conducting Art classes for the underprivileged crowd especially children who have talent but no resources. Helping them with the opportunities, resources and exposure which helps them to grow as an Artist.",
-        icon: Palette,
-        image: "/assets/artisticexpression.jpg",
-        color: "brand-gold"
-    },
-    {
-        id: "atman",
-        title: "Program Ātman (Health)",
-        description: "Attempt to improve the physical health via Yoga, Meditation and other physical activities. A platform for mental health discussions that includes various mental health sessions.",
-        icon: Heart,
-        image: "/assets/atman.jpg",
-        color: "red-500"
-    },
-    {
-        id: "seva",
-        title: "Program Seva (Service)",
-        description: "Conducting Food/Clothes/Blood donation drives throughout the year. Providing food kits, Grocery Kits and other basic essentials to the needy.",
-        icon: Utensils,
-        image: "/assets/seva.jpg",
-        color: "green-500"
-    },
-    {
-        id: "vidya",
-        title: "Program Vidya (Education)",
-        description: "Supporting Children with School Admission Fees, School Kits, personal development, career guidance and other educational classes.",
-        icon: GraduationCap,
-        image: "/assets/certificate_impact.jpg", // Placeholder
-        color: "blue-500"
-    },
-    {
-        id: "awareness",
-        title: "Program Awareness",
-        description: "As the first step towards change is Awareness, we organize various awareness programs (Flash mobs, Road Shows, Marathons, Art Show, Campaigns) and also create an impact by helping, uplifting, motivating or even just supporting someone.",
-        icon: Megaphone,
-        image: "/assets/puneteam.jpg",
-        color: "purple-500"
-    }
-];
+// Mapping string icon names from API to Lucide components
+const iconMap = {
+    Palette, Activity, Heart, GraduationCap, Megaphone, Utensils, BookOpen, Home
+};
 
 export default function Programs() {
+    const [programs, setPrograms] = useState([]);
+    const [projects, setProjects] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // Fetch both Programs and Projects in parallel
+                const [programsRes, projectsRes] = await Promise.all([
+                    api.getPrograms(),
+                    api.getProjects()
+                ]);
+
+                if (programsRes.success) {
+                    setPrograms(programsRes.data);
+                } else {
+                    setError("Failed to load programs.");
+                }
+
+                if (projectsRes.success) {
+                    setProjects(projectsRes.data);
+                }
+            } catch (err) {
+                console.error("Error fetching data:", err);
+                setError("An unexpected error occurred.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Helper to get 2 recent projects for a specific program
+    const getRecentProjects = (programId) => {
+        if (!projects || projects.length === 0) return [];
+        
+        return projects
+            // Loose comparison (==) handles if one is string and other is number
+            // Also checks if program_id exists to prevent crashes
+            .filter(p => p.program_id && String(p.program_id) === String(programId)) 
+            .sort((a, b) => new Date(b.created_at || Date.now()) - new Date(a.created_at || Date.now())) // Sort by newest
+            .slice(0, 2); // Take top 2
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-brand-background dark:bg-[#0A0A0A]">
+                <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-brand-background dark:bg-[#0A0A0A] text-center p-4">
+                <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
+                <h2 className="text-2xl font-bold dark:text-white mb-2">Oops! Something went wrong.</h2>
+                <p className="text-gray-500 mb-6">{error}</p>
+                <button 
+                    onClick={() => window.location.reload()} 
+                    className="btn-primary"
+                >
+                    Try Again
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div className="dark:bg-[#0A0A0A] transition-colors duration-500 min-h-screen">
             <PageHeader
@@ -58,8 +96,11 @@ export default function Programs() {
 
             <Section className="bg-white dark:bg-[#0A0A0A]">
                 <div className="space-y-20 md:space-y-32">
-                    {programsData.map((program, idx) => {
+                    {programs.map((program, idx) => {
                         const isEven = idx % 2 === 1;
+                        const IconComponent = iconMap[program.icon] || Heart; // Default to Heart if icon not found
+                        const recentProjects = getRecentProjects(program.id);
+
                         return (
                             <div
                                 key={program.id}
@@ -68,6 +109,7 @@ export default function Programs() {
                                     isEven ? "lg:flex-row-reverse" : ""
                                 )}
                             >
+                                {/* Image Side */}
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     whileInView={{ opacity: 1, scale: 1 }}
@@ -77,18 +119,20 @@ export default function Programs() {
                                 >
                                     <div className="relative aspect-[4/3] rounded-3xl md:rounded-[3rem] overflow-hidden shadow-2xl group border-8 border-brand-background dark:border-zinc-800 transition-colors w-full">
                                         <img
-                                            src={program.image}
+                                            src={program.cover_image || "/placeholder.jpg"}
                                             alt={program.title}
                                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            onError={(e) => e.target.src = "/placeholder.jpg"}
                                         />
                                         <div className="absolute inset-0 bg-brand-gold/10 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
                                 </motion.div>
 
-                                <div className="w-full lg:w-1/2 space-y-10">
+                                {/* Content Side */}
+                                <div className="w-full lg:w-1/2 space-y-8">
                                     <div className="flex items-center gap-6">
                                         <div className="w-20 h-20 bg-brand-gold/10 dark:bg-brand-gold/5 rounded-[2rem] flex items-center justify-center shrink-0">
-                                            <program.icon className="w-10 h-10 text-brand-gold" />
+                                            <IconComponent className="w-10 h-10 text-brand-gold" />
                                         </div>
                                         <div>
                                             <span className="text-brand-gold font-black uppercase tracking-widest text-xs">Signature Program</span>
@@ -100,28 +144,37 @@ export default function Programs() {
                                         {program.description}
                                     </p>
 
-                                    <div className="bg-brand-background dark:bg-zinc-900/50 p-8 rounded-[2rem] border border-brand-border dark:border-white/5 shadow-lg relative overflow-hidden">
-                                        <div className="flex flex-col sm:flex-row gap-4 relative z-10">
-                                            <Link to="/donate" className="btn-primary flex-1 shadow-brand-gold/20 text-center">Support {program.title.split(" ")[1]}</Link>
-                                            <Link to="/contact" className="btn-outline flex-1 text-center bg-white dark:bg-transparent">Volunteer</Link>
+                                    {/* Recent Projects Section (Conditional Render) */}
+                                    {recentProjects.length > 0 && (
+                                        <div className="bg-brand-background dark:bg-zinc-900/50 p-6 rounded-3xl border border-brand-border dark:border-white/5">
+                                            <h4 className="font-bold text-sm uppercase tracking-wider text-brand-text-muted dark:text-gray-500 mb-4 flex items-center gap-2">
+                                                <Activity className="w-4 h-4" /> Recent Projects 
+                                            </h4>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                {recentProjects.map(project => (
+                                                    <div key={project.id} className="bg-white dark:bg-white/5 p-4 rounded-2xl flex items-center gap-3 shadow-sm">
+                                                        <div className="w-2 h-2 rounded-full bg-brand-gold shrink-0" />
+                                                        <div className="min-w-0">
+                                                            <span className="text-sm font-bold text-gray-900 dark:text-white block truncate">
+                                                                {project.title}
+                                                            </span>
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                {project.location || "On-site"}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
 
-                                    <div className="flex flex-col gap-4">
-                                        <h4 className="font-bold dark:text-white flex items-center gap-2">
-                                            <ArrowRight className="text-brand-gold w-5 h-5" /> Recent Projects under {program.title.split(" ")[1]}
-                                        </h4>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {/* Placeholders for project mini-cards - intended for future expansion */}
-                                            <div className="bg-gray-100 dark:bg-white/5 p-4 rounded-2xl text-center">
-                                                <span className="text-xs font-bold text-gray-500 block mb-1">Project 1</span>
-                                                <div className="h-2 w-12 bg-gray-300 dark:bg-white/10 rounded-full mx-auto" />
-                                            </div>
-                                            <div className="bg-gray-100 dark:bg-white/5 p-4 rounded-2xl text-center">
-                                                <span className="text-xs font-bold text-gray-500 block mb-1">Project 2</span>
-                                                <div className="h-2 w-12 bg-gray-300 dark:bg-white/10 rounded-full mx-auto" />
-                                            </div>
-                                        </div>
+                                    {/* Action Button (Volunteer Only) */}
+                                    <div className="pt-2">
+                                        <Link to="/contact" className="btn-primary w-full md:w-auto flex items-center justify-center gap-2 group">
+                                            <HandHelping className="w-5 h-5" />
+                                            <span>Volunteer for {program.title}</span>
+                                            <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
