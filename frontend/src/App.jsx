@@ -13,6 +13,8 @@ import Programs from "./pages/Programs";
 import Events from "./pages/Events";
 import Contact from "./pages/Contact";
 import Donate from "./pages/Donate";
+import CSR from "./pages/CSR";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -28,8 +30,10 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/programs" element={<Programs />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/csr" element={<CSR />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         </Route>
 
 
