@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from app.core.database import db
 from app.core.security import verify_password, create_access_token, get_password_hash
@@ -49,7 +49,7 @@ async def read_users_me(current_user: dict = Depends(get_current_user)):
 
 
 @router.post("/login")
-async def admin_login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def admin_login(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
     user = await db.users.find_one({"email": form_data.username})
 
     if not user or not verify_password(form_data.password, user['password_hash']):
@@ -62,8 +62,24 @@ async def admin_login(form_data: OAuth2PasswordRequestForm = Depends()):
     access_token = create_access_token(
         data={"sub": user["email"], "role": user.get("role", "admin")}
     )
+    # Set session-scoped httpOnly cookie (no max_age/expires => session cookie)
+    # Note: in production consider setting `secure=True` and configuring SameSite as needed.
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        samesite="lax",
+    )
 
+    # Return token in body for backward compatibility
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/logout")
+async def admin_logout(response: Response):
+    """Clears the session cookie created during login."""
+    response.delete_cookie(key="access_token")
+    return {"success": True, "message": "Logged out"}
 
 
 @router.post("/register", response_model=AdminResponse)
