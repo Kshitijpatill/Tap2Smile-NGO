@@ -9,9 +9,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { motion } from "framer-motion";
+
 import Section from "../components/Section";
-import { api } from "../services/api";
 import { cn } from "../lib/utils";
+import { api } from "../services/api";
 
 const iconMap = {
   Utensils: Utensils,

@@ -29,7 +29,7 @@ const slides = [
         heading: "Nurturing <span class='text-brand-gold'>Young Minds</span> holistically.",
         description: "Combining academic knowledge, artistic expression, and personal development to empower children from underserved communities.",
         image: "/assets/50ea6add-857a-41e9-bfe4-e386c89c1174.jpg",
-        cta: "Explore Academy",
+        cta: "Explore Programs",
         link: "/programs"
     }
 ];
