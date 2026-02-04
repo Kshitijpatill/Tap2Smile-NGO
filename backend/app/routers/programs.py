@@ -90,12 +90,11 @@ async def update_program(program_id: str, program: ProgramBase):
 @router.delete("/{program_id}", dependencies=[Depends(get_current_user)])
 async def delete_program(program_id: str):
     program_obj_id = validate_object_id(program_id)
-    
-    linked_projects = await db.projects.count_documents({"program_id": program_obj_id})
+    linked_projects = await db.projects.count_documents({"program_ids": program_obj_id})
     if linked_projects > 0:
         raise HTTPException(
-            status_code=400, 
-            detail=f"Cannot delete program. It has {linked_projects} active projects linked to it."
+            status_code=400,
+            detail=f"Cannot delete program. It is linked to {linked_projects} projects."
         )
 
     result = await db.programs.delete_one({"_id": program_obj_id})

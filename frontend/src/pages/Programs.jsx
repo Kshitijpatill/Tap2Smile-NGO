@@ -51,14 +51,20 @@ export default function Programs() {
         fetchData();
     }, []);
 
-    // Helper to get 2 recent projects for a specific program
     const getRecentProjects = (programId) => {
         if (!projects || projects.length === 0) return [];
         
         return projects
-            // Loose comparison (==) handles if one is string and other is number
-            // Also checks if program_id exists to prevent crashes
-            .filter(p => p.program_id && String(p.program_id) === String(programId)) 
+            .filter(p => {
+                const projectProgramIds = [];
+                if (p.program_ids && Array.isArray(p.program_ids)) {
+                    projectProgramIds.push(...p.program_ids);
+                }
+                if (p.program_id) {
+                    projectProgramIds.push(p.program_id);
+                }
+                return projectProgramIds.some(id => String(id) === String(programId));
+            })
             .sort((a, b) => new Date(b.created_at || Date.now()) - new Date(a.created_at || Date.now())) // Sort by newest
             .slice(0, 2); // Take top 2
     };

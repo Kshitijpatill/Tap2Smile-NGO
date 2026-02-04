@@ -12,15 +12,18 @@ http://localhost:8000/api
 Authorization: Bearer <your_access_token>
 ```
 
----
+## API Endpoints
 
 ## 1. Programs API
 **Prefix:** `/api/programs`
 
 ### 1.1 Get Active Programs (Public)
-- **Endpoint:** `GET /`
-- **Description:** Fetches a list of all *active* programs.
-- **Response:**
+```
+Endpoint: GET /
+Description: Fetches a list of all active programs.
+```
+
+**Response:**
 ```json
 [
   {
@@ -36,11 +39,16 @@ Authorization: Bearer <your_access_token>
 ```
 
 ### 1.2 Get Single Program (Public)
-- **Endpoint:** `GET /{program_id}`
+```
+Endpoint: GET /{program_id}
+```
 
 ### 1.3 Create Program (Admin Only) 🔒
-- **Endpoint:** `POST /`
-- **Body:**
+```
+Endpoint: POST /
+```
+
+**Body:**
 ```json
 {
   "title": "Project Vidya",
@@ -51,22 +59,27 @@ Authorization: Bearer <your_access_token>
 ```
 
 ### 1.4 Update Program (Admin Only) 🔒
-- **Endpoint:** `PUT /{program_id}`
+```
+Endpoint: PUT /{program_id}
+```
 
 ### 1.5 Delete Program (Admin Only) 🔒
-- **Endpoint:** `DELETE /{program_id}`
-- **Note:** Will fail if the program has linked projects.
-
----
+```
+Endpoint: DELETE /{program_id}
+```
+**Note:** Will fail if the program is linked to any projects (checked against the `program_ids` list of all projects).
 
 ## 2. Projects API
 **Prefix:** `/api/projects`
 
 ### 2.1 Get Active Projects (Public)
-- **Endpoint:** `GET /`
-- **Query Params:** `?program_id={id}` (Optional filter)
-- **Description:** Returns *only active* projects.
-- **Response:**
+```
+Endpoint: GET /
+Query Params: ?program_id={id} (Optional filter)
+Description: Returns only active projects. If filtered by program_id, returns projects that include that specific program in their list.
+```
+
+**Response:**
 ```json
 [
   {
@@ -74,7 +87,10 @@ Authorization: Bearer <your_access_token>
     "description": "Painting session.",
     "location": "Mumbai",
     "images": ["url1.jpg"],
-    "program_id": "65a1b...",
+    "program_ids": [
+      "65a1b2c3d4e5f6g7h8i9j0k1",
+      "67a21b..."
+    ],
     "start_date": "2026-02-01",
     "end_date": "2026-02-05",
     "is_active": true,
@@ -84,25 +100,40 @@ Authorization: Bearer <your_access_token>
 ```
 
 ### 2.2 Get ALL Projects (Admin Dashboard) 🔒
-- **Endpoint:** `GET /admin`
-- **Query Params:** `?program_id={id}` (Optional)
+```
+Endpoint: GET /admin
+Query Params: ?program_id={id} (Optional filter)
+Description: Returns all projects (Active + Inactive). Supports backward compatibility for old program_id fields.
+```
 
 ### 2.3 Create Project (Admin Only) 🔒
-- **Endpoint:** `POST /`
-- **Body:**
+```
+Endpoint: POST /
+```
+
+**Body:**
 ```json
 {
   "title": "New Workshop",
   "description": "Details...",
-  "program_id": "Valid_Program_ObjectId",
+  "location": "Pune",
+  "program_ids": [
+    "65a1b2c3d4e5f6g7h8i9j0k1",
+    "65a1b2c3d4e5f6g7h8i9j0k2"
+  ],
   "start_date": "2026-05-01",
+  "end_date": "2026-05-05",
   "is_active": true
 }
 ```
 
 ### 2.4 Update & Delete (Admin Only) 🔒
-- **Update:** `PUT /{project_id}`
-- **Delete:** `DELETE /{project_id}`
+```
+Update: PUT /{project_id}
+Body: Same as Create Project (send updated program_ids array).
+
+Delete: DELETE /{project_id}
+```
 
 ---
 
