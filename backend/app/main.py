@@ -1,10 +1,11 @@
 import os
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, RedirectResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import test_mongodb_connection
+
 
 from app.routers import (
     programs,
@@ -14,8 +15,12 @@ from app.routers import (
     contact,
     donations,
     impact,
-    admin
+    admin,
+    admin_data
 )
+
+
+
 
 app = FastAPI(
     title="Tap To Smile API",
@@ -23,10 +28,16 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json"
 )
-
+app.include_router(
+    admin_data.router,
+    prefix="/api/admin",
+    tags=["Admin Data"]
+)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    # For session cookies to work with the frontend dev server,
+    # specify the frontend origin instead of wildcard when credentials=True.
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,6 +53,8 @@ app.include_router(contact.router, prefix="/api/contact", tags=["Contact"])
 app.include_router(
     donations.router, prefix="/api/donations", tags=["Donations"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+
+
 
 
 @app.exception_handler(RequestValidationError)
