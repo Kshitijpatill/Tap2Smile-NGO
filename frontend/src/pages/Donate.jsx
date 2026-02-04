@@ -4,6 +4,7 @@ import Section from "../components/Section";
 import { api } from "../services/api";
 import { cn } from "../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import PageHeader from "../components/PageHeader";
 
 const donationTiers = [
     { amount: 10, label: "Provide a warm meal", icon: "🍛" },

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Heart } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin, Heart } from "lucide-react";
 
 export default function Footer() {
     return (
@@ -13,13 +13,19 @@ export default function Footer() {
                             Empowering communities through selfless contribution and collective action. Join us in making the world a better place, one smile at a time.
                         </p>
                         <div className="flex gap-4">
-                            {[Facebook, Twitter, Instagram].map((Icon, idx) => (
+                            {[
+                                { icon: Facebook, href: "https://facebook.com/tap2smile" },
+                                { icon: Instagram, href: "https://instagram.com/tap2smile" },
+                                { icon: Linkedin, href: "https://www.linkedin.com/in/tap-to-smile-ngo-1b23111b2" }
+                            ].map((social, idx) => (
                                 <a
                                     key={idx}
-                                    href="#"
+                                    href={social.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-brand-gold hover:text-brand-black transition-all group"
                                 >
-                                    <Icon className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                                    <social.icon className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 </a>
                             ))}
                         </div>
@@ -44,16 +50,22 @@ export default function Footer() {
                     <div>
                         <h4 className="text-xs font-black uppercase tracking-[0.3em] mb-10 text-brand-gold">Support</h4>
                         <ul className="space-y-5 text-sm">
-                            {["Donate Now", "Volunteer", "Founders Vision", "Privacy Policy"].map((item) => (
-                                <li key={item}>
-                                    <Link
-                                        to="/donate"
-                                        className="text-gray-400 hover:text-brand-gold font-bold transition-all hover:translate-x-1 inline-block"
-                                    >
-                                        {item}
-                                    </Link>
-                                </li>
-                            ))}
+                            {
+                                [
+                                    { name: "Donate Now", path: "/donate" },
+                                    { name: "Volunteer", path: "/contact?tab=volunteer" },
+                                    { name: "Founders Vision", path: "/about" },
+                                    { name: "Privacy Policy", path: "/privacy-policy" }
+                                ].map((item) => (
+                                    <li key={item.name}>
+                                        <Link
+                                            to={item.path}
+                                            className="text-gray-400 hover:text-brand-gold font-bold transition-all hover:translate-x-1 inline-block"
+                                        >
+                                            {item.name}
+                                        </Link>
+                                    </li>
+                                ))}
                         </ul>
                     </div>
 
@@ -66,11 +78,11 @@ export default function Footer() {
                             </li>
                             <li className="flex items-center gap-4 text-gray-400">
                                 <Phone className="w-5 h-5 shrink-0 text-brand-gold" />
-                                <span className="font-medium text-sm">+91 123 456 7890</span>
+                                <span className="font-medium text-sm">+91 78766 02339</span>
                             </li>
                             <li className="flex items-center gap-4 text-gray-400">
                                 <Mail className="w-5 h-5 shrink-0 text-brand-gold" />
-                                <span className="font-medium text-sm">contact@taptosmile.org</span>
+                                <span className="font-medium text-sm">tap2smile@gmail.com</span>
                             </li>
                         </ul>
                     </div>
@@ -85,7 +97,7 @@ export default function Footer() {
                     </div>
                     <div className="flex gap-10">
                         <a href="#" className="hover:text-brand-gold transition-colors">Terms</a>
-                        <a href="#" className="hover:text-brand-gold transition-colors">Privacy</a>
+                        <Link to="/privacy-policy" className="hover:text-brand-gold transition-colors">Privacy</Link>
                     </div>
                 </div>
             </div>

@@ -93,46 +93,39 @@ async def get_single_project(project_id: str):
 
 @router.post("/", dependencies=[Depends(get_current_user)], response_model=ProjectResponse)
 async def create_project(project: ProjectBase):
-    try:
-        project_dict = project.model_dump()
-        print(f"[create_project] payload: {project_dict}")
 
-        if project_dict.get("program_id"):
-            # validate string ObjectId
-            await validate_program_id(project_dict["program_id"])
-            project_dict["program_id"] = ObjectId(project_dict["program_id"])
+    project_dict = project.model_dump()
 
-        if project_dict.get("start_date"):
-            project_dict["start_date"] = datetime.combine(
-                project_dict["start_date"],
-                time.min,
-                tzinfo=timezone.utc
-            )
+    if project_dict.get("program_id"):
+        await validate_program_id(project_dict["program_id"])
+        project_dict["program_id"] = ObjectId(project_dict["program_id"])
 
-        if project_dict.get("end_date"):
-            project_dict["end_date"] = datetime.combine(
-                project_dict["end_date"],
-                time.min,
-                tzinfo=timezone.utc
-            )
+    if project_dict.get("start_date"):
+        project_dict["start_date"] = datetime.combine(
+            project_dict["start_date"],
+            time.min,
+            tzinfo=timezone.utc
+        )
 
-        project_dict["created_at"] = datetime.now(timezone.utc)
-        project_dict["updated_at"] = datetime.now(timezone.utc)
+    if project_dict.get("end_date"):
+        project_dict["end_date"] = datetime.combine(
+            project_dict["end_date"],
+            time.min,
+            tzinfo=timezone.utc
+        )
 
-        result = await db.projects.insert_one(project_dict)
+    project_dict["created_at"] = datetime.now(timezone.utc)
+    project_dict["updated_at"] = datetime.now(timezone.utc)
 
-        created_project = await db.projects.find_one({"_id": result.inserted_id})
-        created_project["id"] = str(created_project["_id"])
+    result = await db.projects.insert_one(project_dict)
 
-        if created_project.get("program_id"):
-            created_project["program_id"] = str(created_project["program_id"])
+    created_project = await db.projects.find_one({"_id": result.inserted_id})
+    created_project["id"] = str(created_project["_id"])
 
-        return created_project
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"[create_project] ERROR: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+    if created_project.get("program_id"):
+        created_project["program_id"] = str(created_project["program_id"])
+
+    return created_project
 
 
 @router.put("/{project_id}", dependencies=[Depends(get_current_user)], response_model=ProjectResponse)
@@ -141,53 +134,46 @@ async def update_project(project_id: str, project: ProjectBase):
         raise HTTPException(
             status_code=400, detail="Invalid Project ID format")
 
-    try:
-        update_data = project.model_dump()
-        print(f"[update_project] id={project_id} payload={update_data}")
+    update_data = project.model_dump()
 
-        if update_data.get("start_date"):
-            update_data["start_date"] = datetime.combine(
-                update_data["start_date"],
-                time.min,
-                tzinfo=timezone.utc
-            )
-
-        if update_data.get("end_date"):
-            update_data["end_date"] = datetime.combine(
-                update_data["end_date"],
-                time.min,
-                tzinfo=timezone.utc
-            )
-
-        if update_data.get("program_id"):
-            await validate_program_id(update_data["program_id"])
-            update_data["program_id"] = ObjectId(update_data["program_id"])
-
-        update_data["updated_at"] = datetime.now(timezone.utc)
-
-        result = await db.projects.update_one(
-            {"_id": ObjectId(project_id)},
-            {"$set": update_data}
+    if update_data.get("start_date"):
+        update_data["start_date"] = datetime.combine(
+            update_data["start_date"],
+            time.min,
+            tzinfo=timezone.utc
         )
 
-        if result.matched_count == 0:
-            raise HTTPException(status_code=404, detail="Project not found")
+    if update_data.get("end_date"):
+        update_data["end_date"] = datetime.combine(
+            update_data["end_date"],
+            time.min,
+            tzinfo=timezone.utc
+        )
 
-        updated_project = await db.projects.find_one({"_id": ObjectId(project_id)})
+    if update_data.get("program_id"):
+        await validate_program_id(update_data["program_id"])
+        update_data["program_id"] = ObjectId(update_data["program_id"])
 
-        if "created_at" not in updated_project:
-            updated_project["created_at"] = updated_project["updated_at"]
+    update_data["updated_at"] = datetime.now(timezone.utc)
 
-        updated_project["id"] = str(updated_project["_id"])
-        if "program_id" in updated_project and updated_project["program_id"]:
-            updated_project["program_id"] = str(updated_project["program_id"])
+    result = await db.projects.update_one(
+        {"_id": ObjectId(project_id)},
+        {"$set": update_data}
+    )
 
-        return updated_project
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"[update_project] ERROR: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    updated_project = await db.projects.find_one({"_id": ObjectId(project_id)})
+
+    if "created_at" not in updated_project:
+        updated_project["created_at"] = updated_project["updated_at"]
+
+    updated_project["id"] = str(updated_project["_id"])
+    if "program_id" in updated_project and updated_project["program_id"]:
+        updated_project["program_id"] = str(updated_project["program_id"])
+
+    return updated_project
 
 
 @router.delete("/{project_id}", dependencies=[Depends(get_current_user)])

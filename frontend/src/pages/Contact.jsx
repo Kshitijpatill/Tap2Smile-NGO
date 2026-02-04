@@ -4,9 +4,13 @@ import Section from "../components/Section";
 import { api } from "../services/api";
 import { cn } from "../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams } from "react-router-dom";
+import PageHeader from "../components/PageHeader";
 
 export default function Contact() {
-    const [activeTab, setActiveTab] = useState("contact");
+    const [searchParams] = useSearchParams();
+    const defaultTab = searchParams.get("tab") === "volunteer" ? "volunteer" : "contact";
+    const [activeTab, setActiveTab] = useState(defaultTab);
     const [formStatus, setFormStatus] = useState({ loading: false, success: false, error: null });
 
     const [contactData, setContactData] = useState({ name: "", email: "", subject: "", message: "" });
@@ -38,29 +42,63 @@ export default function Contact() {
 
     return (
         <div className="dark:bg-[#0A0A0A] transition-colors duration-500 min-h-screen">
-            <section className="bg-brand-black dark:bg-zinc-900 border-b border-white/5 text-white py-24 md:py-32 relative overflow-hidden text-center">
-                <div className="container-custom relative z-10">
-                    <span className="text-brand-gold font-black uppercase tracking-[0.3em] text-xs mb-4 block">Get In Touch</span>
-                    <h1 className="text-4xl md:text-7xl font-black mb-8 leading-tight text-white">We Love to <span className="text-brand-gold">Connect</span></h1>
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        Whether you want to support us, volunteer your time, or just say hello, our team is always ready to hear from you.
-                    </p>
+            <PageHeader
+                title={<>We Love to <span className="text-brand-gold">Connect</span></>}
+                subtitle="Whether you want to support us, volunteer your time, or just say hello, our team is always ready to hear from you."
+            />
+
+            {/* Volunteering Section */}
+            <Section className="bg-white dark:bg-[#0A0A0A]">
+                <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+                    <div className="w-full lg:w-1/2 ">
+                        <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group aspect-[4/3] border-8 border-brand-background dark:border-zinc-800">
+                            <img
+                                src="/assets/volunteers.jpg"
+                                alt="Tap To Smile Volunteers"
+                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                            />
+                            <div className="absolute inset-0 bg-brand-gold/10 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                    </div>
+                    <div className="w-full lg:w-1/2 space-y-8">
+                        <div>
+                            <span className="text-brand-gold font-black uppercase tracking-[0.3em] text-xs mb-4 block">Join Our Mission</span>
+                            <h2 className="text-3xl md:text-5xl font-black mb-6 dark:text-white">Volunteering with <br /><span className="text-brand-gold">Tap To Smile</span></h2>
+                        </div>
+                        <div className="space-y-6 text-lg text-brand-text-muted dark:text-gray-400 leading-relaxed max-h-[500px] overflow-y-auto pr-4 custom-scrollbar">
+                            <p>
+                                As we know Volunteers are an essential part of an NGO and they bring a wide range of skills and experiences. In Tap To Smile, we find people who are passionate about volunteering or any social cause and we make it easy for them to get involved and communicate the value of their contribution.
+                            </p>
+                            <p>
+                                We have a team of around <strong>200+ volunteers</strong> and 150+ trainers / students / professionals supporting us throughout the year as part of various initiatives. Our Volunteers help us in many ways, including fundraising, organizing events, providing administrative support, conducting research and helping us achieve our goals more effectively and efficiently.
+                            </p>
+                            <p>
+                                We feel keeping volunteers motivated is crucial. We establish clear goals and objectives and communicate them effectively. Regular communication and updates help our volunteers feel connected to the organization and its mission.
+                            </p>
+                            <p>
+                                We also provide adequate training and support, including workshops and mentorship programs. We recognize and appreciate contributions through awards, certificates, and social media shoutouts.
+                            </p>
+                            <p>
+                                As an NGO, we create a positive and inclusive work environment that values diversity and promotes teamwork. We encourage our volunteers to collaborate to get a sense of belonging and foster a positive work culture.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-            </section>
+            </Section>
 
             <Section className="bg-brand-background dark:bg-[#0A0A0A]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-24">
                     {/* Info Side */}
                     <div className="lg:col-span-1 space-y-10">
-                        <div className="bg-white dark:bg-zinc-900 p-10 rounded-[3rem] border border-brand-border dark:border-white/5 shadow-2xl relative overflow-hidden group">
+                        <div className="bg-white dark:bg-zinc-900 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-brand-border dark:border-white/5 shadow-2xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
                             <h3 className="text-3xl font-black mb-12 dark:text-white relative z-10">Reach Us</h3>
 
                             <div className="space-y-12 relative z-10">
                                 {[
                                     { label: "Our Location", value: "Mumbai, Maharashtra, India", icon: MapPin },
-                                    { label: "Phone Number", value: "+91 123 456 7890", icon: Phone },
-                                    { label: "Email Address", value: "contact@taptosmile.org", icon: Mail }
+                                    { label: "Phone Number", value: "+91 78766 02339", icon: Phone },
+                                    { label: "Email Address", value: "tap2smile@gmail.com", icon: Mail }
                                 ].map((item, idx) => (
                                     <div key={idx} className="flex items-start gap-6 group/item">
                                         <div className="w-14 h-14 bg-brand-gold/10 dark:bg-brand-gold/5 rounded-[1.25rem] flex items-center justify-center shrink-0 group-hover/item:rotate-6 transition-transform">
@@ -92,26 +130,26 @@ export default function Contact() {
                                 <button
                                     onClick={() => { setActiveTab("contact"); setFormStatus({ ...formStatus, success: false }); }}
                                     className={cn(
-                                        "flex-1 py-10 font-black text-xs uppercase tracking-[0.3em] flex flex-col items-center justify-center gap-3 transition-all",
+                                        "flex-1 py-8 md:py-10 font-black text-[10px] md:text-xs uppercase tracking-[0.3em] flex flex-col items-center justify-center gap-3 transition-all",
                                         activeTab === "contact" ? "bg-white dark:bg-zinc-900 text-brand-gold" : "bg-gray-50 dark:bg-black/20 text-brand-text-muted dark:text-gray-600 hover:text-brand-gold"
                                     )}
                                 >
-                                    <Send className="w-5 h-5 mb-1" /> Send Message
-                                    {activeTab === "contact" && <motion.div layoutId="tab-underline" className="h-1 w-12 bg-brand-gold rounded-full mt-2" />}
+                                    <Send className="w-4 h-4 md:w-5 md:h-5 mb-1" /> Send Message
+                                    {activeTab === "contact" && <motion.div layoutId="tab-underline" className="h-1 w-10 md:w-12 bg-brand-gold rounded-full mt-2" />}
                                 </button>
                                 <button
                                     onClick={() => { setActiveTab("volunteer"); setFormStatus({ ...formStatus, success: false }); }}
                                     className={cn(
-                                        "flex-1 py-10 font-black text-xs uppercase tracking-[0.3em] flex flex-col items-center justify-center gap-3 transition-all",
+                                        "flex-1 py-8 md:py-10 font-black text-[10px] md:text-xs uppercase tracking-[0.3em] flex flex-col items-center justify-center gap-3 transition-all",
                                         activeTab === "volunteer" ? "bg-white dark:bg-zinc-900 text-brand-gold" : "bg-gray-50 dark:bg-black/20 text-brand-text-muted dark:text-gray-600 hover:text-brand-gold"
                                     )}
                                 >
-                                    <UserPlus className="w-5 h-5 mb-1" /> Join Team
-                                    {activeTab === "volunteer" && <motion.div layoutId="tab-underline" className="h-1 w-12 bg-brand-gold rounded-full mt-2" />}
+                                    <UserPlus className="w-4 h-4 md:w-5 md:h-5 mb-1" /> Join Team
+                                    {activeTab === "volunteer" && <motion.div layoutId="tab-underline" className="h-1 w-10 md:w-12 bg-brand-gold rounded-full mt-2" />}
                                 </button>
                             </div>
 
-                            <div className="p-10 md:p-16">
+                            <div className="p-8 md:p-16">
                                 <AnimatePresence mode="wait">
                                     {formStatus.success ? (
                                         <motion.div
