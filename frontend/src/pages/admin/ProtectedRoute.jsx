@@ -1,53 +1,49 @@
 import { useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { api } from "../../services/api";
+import { Loader2 } from "lucide-react";
 
-export default function ProtectedRoute({ children }) {
-  const [status, setStatus] = useState("checking");
-  const location = useLocation(); // 🔐 detect back/forward
+export default function ProtectedRoute() {
+  const [status, setStatus] = useState("checking"); // checking | authenticated | unauthorized
 
   useEffect(() => {
-    let active = true;
-
     const verifySession = async () => {
+      const token = localStorage.getItem("admin_token");
+
+      // 1. If no token immediately found, fail fast
+      if (!token) {
+        setStatus("unauthorized");
+        return;
+      }
+
+      // 2. Background Check: Verify token validity with backend
       try {
         const res = await api.getAdminProfile();
-
-        if (!active) return;
-
-        if (res.success && res.data) {
-          sessionStorage.setItem("adminLoggedIn", "true");
-
-          if (res.data.role) {
-            sessionStorage.setItem("adminRole", res.data.role);
-          }
-
-          setStatus("ok");
+        if (res.success) {
+          setStatus("authenticated");
         } else {
-          fail();
+          // Token invalid or expired
+          localStorage.removeItem("admin_token");
+          setStatus("unauthorized");
         }
-      } catch {
-        fail();
+      } catch (error) {
+        localStorage.removeItem("admin_token");
+        setStatus("unauthorized");
       }
     };
 
-    const fail = () => {
-      if (!active) return;
-      sessionStorage.clear();
-      setStatus("fail");
-    };
-
-    setStatus("checking"); // 🔥 reset on every route change
     verifySession();
+  }, []);
 
-    return () => {
-      active = false;
-    };
-  }, [location.pathname]); // 🔥 THIS LINE FIXES BACK BUTTON
+  if (status === "checking") {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
+        <Loader2 className="w-10 h-10 animate-spin text-yellow-600 mb-4" />
+        <p className="text-gray-500 font-medium">Verifying Access...</p>
+      </div>
+    );
+  }
 
-  if (status === "checking") return null;
-  if (status === "fail") return <Navigate to="/admin/login" replace />;
-
-  return children;
+  // If authenticated, render the Admin Layout (Outlet)
+  return status === "authenticated" ? <Outlet /> : <Navigate to="/admin/login" replace />;
 }
-  

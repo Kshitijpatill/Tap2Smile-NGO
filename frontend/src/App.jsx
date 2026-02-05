@@ -6,7 +6,6 @@ import {
   Navigate,
 } from "react-router-dom";
 
-// Public Components & Pages
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -19,12 +18,12 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import ProtectedRoute from "./pages/admin/ProtectedRoute";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -37,13 +36,12 @@ export default function App() {
         </Route>
 
         <Route path="/admin/login" element={<AdminLogin />} />
-
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          
-          <Route path="dashboard" element={<AdminDashboard />} />
-
-          <Route path=":section" element={<AdminDashboard />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path=":section" element={<AdminDashboard />} />
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

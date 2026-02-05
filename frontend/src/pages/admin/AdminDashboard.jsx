@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Plus,
-  LayoutDashboard,
-  BookOpen,
-  Calendar,
-  Briefcase,
-  Users,
-  Mail,
-  Heart,
-  BarChart3,
-  AlertCircle,
-  Loader2,  
+import { 
+  Plus, Loader2, AlertCircle, Trash2, Check, X 
 } from "lucide-react";
-import { api } from "../../services/api";
 
+// Components
 import AdminStats from "./Dashboard_Components/AdminStats";
 import AdminForm from "./Dashboard_Components/AdminForm";
 import AdminList from "./Dashboard_Components/AdminList";
 import AdminOverview from "./Dashboard_Components/AdminOverview";
+
+// Configuration
+import { SECTION_CONFIG } from "./config/sections";
 
 export default function AdminDashboard() {
   const { section = "dashboard" } = useParams();
@@ -27,311 +20,155 @@ export default function AdminDashboard() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Modal State
   const [editingItem, setEditingItem] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [formData, setFormData] = useState({});
 
-  const sections = {
-    programs: {
-      label: "Programs",
-      emoji: "📚",
-      icon: <BookOpen size={24} className="text-yellow-600" />,
-      endpoint: api.getPrograms,
-      createFn: api.createProgram,
-      updateFn: api.updateProgram,
-      deleteFn: api.deleteProgram,
-      fields: [
-        { name: "title", label: "Title", type: "text", required: true },
-        {
-          name: "description",
-          label: "Description",
-          type: "textarea",
-          required: true,
-        },
-        { name: "icon", label: "Icon", type: "text" },
-        {
-          name: "is_active",
-          label: "Active",
-          type: "checkbox",
-          defaultValue: true,
-        },
-      ],
-    },
-    events: {
-      label: "Events",
-      emoji: "📅",
-      icon: <Calendar size={24} className="text-yellow-600" />,
-      endpoint: api.getEvents,
-      createFn: api.createEvent,
-      updateFn: api.updateEvent,
-      deleteFn: api.deleteEvent,
-      fields: [
-        { name: "title", label: "Title", type: "text", required: true },
-        {
-          name: "description",
-          label: "Description",
-          type: "textarea",
-          required: true,
-        },
-        {
-          name: "event_date",
-          label: "Event Date",
-          type: "date",
-          required: true,
-        },
-        { name: "location", label: "Location", type: "text" },
-        {
-          name: "is_upcoming",
-          label: "Upcoming",
-          type: "checkbox",
-          defaultValue: true,
-        },
-      ],
-    },
-    projects: {
-      label: "Projects",
-      emoji: "🏗️",
-      icon: <Briefcase size={24} className="text-yellow-600" />,
-      endpoint: api.getProjects,
-      createFn: api.createProject,
-      updateFn: api.updateProject,
-      deleteFn: api.deleteProject,
-      fields: [
-        { name: "title", label: "Title", type: "text", required: true },
-        {
-          name: "description",
-          label: "Description",
-          type: "textarea",
-          required: true,
-        },
-        { name: "location", label: "Location", type: "text" },
-        { name: "program_id", label: "Program ID", type: "text" },
-        {
-          name: "is_active",
-          label: "Active",
-          type: "checkbox",
-          defaultValue: true,
-        },
-      ],
-    },
-    volunteers: {
-      label: "Volunteers",
-      emoji: "👥",
-      icon: <Users size={24} className="text-yellow-600" />,
-      endpoint: api.getAdminVolunteers,
-      updateFn: (id, d) => api.updateVolunteerStatus(id, d.status),
-      fields: [
-        {
-          name: "status",
-          label: "Status",
-          type: "select",
-          options: ["new", "contacted", "onboarded", "rejected"],
-        },
-      ],
-      readOnly: false,
-      noCreate: true,
-    },
-    messages: {
-      label: "Messages",
-      emoji: "✉️",
-      icon: <Mail size={24} className="text-yellow-600" />,
-      endpoint: api.getAdminMessages,
-      deleteFn: api.deleteMessage,
-      fields: [],
-      readOnly: true,
-    },
-    donations: {
-      label: "Pledges",
-      emoji: "💖",
-      icon: <Heart size={24} className="text-yellow-600" />,
-      endpoint: api.getAdminDonations,
-      updateFn: (id, d) => api.updateDonationStatus(id, d.status),
-      fields: [
-        {
-          name: "status",
-          label: "Payment Status",
-          type: "select",
-          options: ["pending", "received", "cancelled"],
-        },
-      ],
-      readOnly: false,
-      noCreate: true,
-    },
-    impact: {
-      label: "Impact Stats",
-      emoji: "📊",
-      icon: <BarChart3 size={24} className="text-yellow-600" />,
-      endpoint: api.getImpact,
-      createFn: api.createImpact,
-      updateFn: api.updateImpact,
-      deleteFn: api.deleteImpact,
-      fields: [
-        { name: "title", label: "Title", type: "text", required: true },
-        { name: "value", label: "Value", type: "number", required: true },
-        { name: "icon", label: "Icon Name", type: "text" },
-      ],
-    },
-  };
+  const currentSection = SECTION_CONFIG[section];
 
-  const currentSection = sections[section];
-
-
-  if (!currentSection) {
-    if (section === "dashboard") {
-      return <AdminOverview />;
+  // --- FETCH DATA ---
+  const fetchData = async () => {
+    if (!currentSection) return;
+    setLoading(true);
+    setError("");
+    try {
+      const res = await currentSection.fetchFn();
+      if (res.success) {
+        setData(Array.isArray(res.data) ? res.data : []);
+      } else {
+        setError("Failed to load data.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
-    return <NotFound section={section} />;
-  }
+  };
 
   useEffect(() => {
-    setData([]);
-    setLoading(true);
-
-    const fetchData = async () => {
-      try {
-        const result = await currentSection.endpoint();
-        setData(Array.isArray(result.data) ? result.data : result.data || []);
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError("Failed to load data.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [section]); 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await currentSection.createFn(formData);
-      const result = await currentSection.endpoint();
-      setData(Array.isArray(result.data) ? result.data : result.data || []);
-      setFormData({});
-      setShowAddForm(false);
-    } catch {
-      setError("Failed to create.");
-    } finally {
-      setLoading(false);
+    if (section === "dashboard") return;
+    if (!currentSection) {
+        navigate("/admin/dashboard");
+        return;
     }
+    fetchData();
+  }, [section]);
+
+  // --- HANDLERS ---
+  const handleOpenCreate = () => {
+    setEditingItem(null);
+    setShowAddForm(true);
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await currentSection.updateFn(editingItem.id, formData);
-      const result = await currentSection.endpoint();
-      setData(Array.isArray(result.data) ? result.data : result.data || []);
-      setEditingItem(null);
-      setFormData({});
-    } catch {
-      setError("Failed to update.");
-    } finally {
-      setLoading(false);
+  const handleOpenEdit = (item) => {
+    // Data Mapping for Form Compatibility
+    let editData = { ...item };
+    
+    // Flatten Image Array to String for Display (taking first image)
+    if (section === "projects" && Array.isArray(item.images)) {
+        editData.images = item.images[0] || "";
     }
+    
+    setEditingItem(editData);
+    setShowAddForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowAddForm(false);
+    setEditingItem(null);
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this item?")) return;
+    if (!window.confirm("Are you sure you want to delete this?")) return;
     setLoading(true);
     try {
-      await currentSection.deleteFn(id);
-      const result = await currentSection.endpoint();
-      setData(Array.isArray(result.data) ? result.data : result.data || []);
-    } catch {
-      setError("Failed to delete.");
+      const res = await currentSection.deleteFn(id);
+      if (res.success) fetchData();
+      else alert(res.message || "Failed to delete");
+    } catch (err) {
+      alert("Failed to delete item.");
     } finally {
       setLoading(false);
     }
   };
 
+  // --- RENDER ---
+  if (section === "dashboard") {
+    return <AdminOverview />;
+  }
+
+  if (!currentSection) return null;
 
   return (
-    <div key={section} className="flex-1 overflow-y-auto max-w-7xl mx-auto p-8">
-      <div className="mb-8 flex items-center gap-3">
-        <div className="text-4xl">{currentSection.emoji}</div>
-        <h1 className="text-4xl font-bold text-gray-900">
-          {currentSection.label}
-        </h1>
+    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto w-full">
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-brand-gold/10 flex items-center justify-center text-brand-gold border border-brand-gold/20">
+            {currentSection.icon}
+          </div>
+          <div>
+            <h1 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+              {currentSection.label} <span className="text-2xl opacity-80">{currentSection.emoji}</span>
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium">
+              Manage your {currentSection.label.toLowerCase()}
+            </p>
+          </div>
+        </div>
+
+        {!currentSection.readOnly && (
+          <button 
+            onClick={handleOpenCreate}
+            className="btn-primary flex items-center gap-2 shadow-xl shadow-brand-gold/10"
+          >
+            <Plus size={20} /> <span className="font-bold">Add New</span>
+          </button>
+        )}
       </div>
 
+      {/* ERROR DISPLAY */}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 text-red-800 rounded-lg flex items-center gap-2">
+        <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl flex items-center gap-3">
           <AlertCircle size={20} /> {error}
         </div>
       )}
 
+      {/* CONTENT AREA */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-          <Loader2 className="w-10 h-10 animate-spin mb-4 text-yellow-600" />
-          <p>Loading {currentSection.label}...</p>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-10 h-10 text-brand-gold animate-spin" />
         </div>
       ) : (
         <>
-          <AdminStats
-            data={data}
-            label={currentSection.label}
-            icon={currentSection.icon}
-          />
-
-          {!currentSection.readOnly &&
-            !currentSection.noCreate &&
-            !showAddForm &&
-            !editingItem && (
-              <button
-                onClick={() => setShowAddForm(true)}
-                className="flex items-center gap-2 bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 mb-6 transition-all"
-              >
-                <Plus size={20} /> Add New
-              </button>
-            )}
-
-          {(showAddForm || editingItem) && (
-            <AdminForm
-              fields={currentSection.fields}
-              formData={formData}
-              handleInputChange={(e) => {
-                const { name, value, type, checked } = e.target;
-                setFormData((prev) => ({
-                  ...prev,
-                  [name]: type === "checkbox" ? checked : value,
-                }));
-              }}
-              handleSubmit={editingItem ? handleUpdate : handleCreate}
-              onCancel={() => {
-                setShowAddForm(false);
-                setEditingItem(null);
-                setFormData({});
-              }}
-              loading={loading}
-              isEditing={!!editingItem}
-              label={currentSection.label}
-            />
-          )}
-
-          <AdminList
-            data={data}
-            loading={loading}
-            config={currentSection}
-            onEdit={(item) => {
-              setEditingItem(item);
-              setFormData(item);
-              setShowAddForm(false);
-            }}
+          <AdminStats data={data} label={currentSection.label} icon={currentSection.icon} />
+          
+          <AdminList 
+            data={data} 
+            section={section}
+            onEdit={handleOpenEdit}
             onDelete={handleDelete}
-            emoji={currentSection.emoji}
+            readOnly={currentSection.readOnly} // Pass readOnly prop if needed in list
+            customActions={currentSection.customActions}
           />
         </>
+      )}
+
+      {/* MODAL FORM */}
+      {showAddForm && (
+        <AdminForm 
+          section={section}
+          initialData={editingItem}
+          fields={currentSection.fields}
+          onClose={handleCloseForm}
+          onSuccess={() => {
+            handleCloseForm();
+            fetchData();
+          }}
+        />
       )}
     </div>
   );
 }
-
-const NotFound = ({ section }) => (
-  <div className="p-12 text-center text-red-500">
-    <h2 className="text-2xl font-bold mb-2">Section Not Found</h2>
-    <p>The section "{section}" does not exist.</p>
-  </div>
-);

@@ -12,13 +12,13 @@ import {
   Mail,
   TrendingUp,
   Heart,
+  Shield, // Added Shield Icon for Admins
 } from "lucide-react";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-
 
   const sections = [
     {
@@ -77,6 +77,13 @@ export default function AdminLayout() {
       icon: <TrendingUp size={20} />,
       emoji: "📊",
     },
+    {
+      key: "admins",
+      path: "/admin/admins",
+      label: "Admins",
+      icon: <Shield size={20} />,
+      emoji: "🛡️",
+    },
   ];
 
   const handleLogout = () => {
@@ -87,7 +94,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gray-50">
     
       <aside
         className={`${

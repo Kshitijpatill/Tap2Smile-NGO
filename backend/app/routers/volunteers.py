@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Body
 from app.models.volunteer import VolunteerCreate, VolunteerResponse, VolunteerUpdate
 from app.core.database import db
 from typing import List
@@ -117,3 +117,9 @@ async def delete_volunteer(volunteer_id: str):
             status_code=404, detail="Volunteer application not found")
 
     return {"success": True, "message": "Application deleted successfully"}
+
+@router.patch("/{id}", dependencies=[Depends(get_current_user)])
+async def update_volunteer(id: str, update: dict = Body(...)):
+    if not ObjectId.is_valid(id): raise HTTPException(400, "Invalid ID")
+    await db.volunteers.update_one({"_id": ObjectId(id)}, {"$set": update})
+    return {"message": "Updated"}
