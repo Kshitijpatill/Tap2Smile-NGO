@@ -9,14 +9,12 @@ from datetime import datetime
 router = APIRouter()
 
 
-# ===== ID VALIDATION =====
 def validate_object_id(id: str):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid Impact ID format")
     return ObjectId(id)
 
 
-# ===== GET ALL IMPACT STATS =====
 @router.get("/", response_model=List[ImpactResponse])
 async def get_impact():
     cursor = db.impact_stats.find({})
@@ -30,7 +28,6 @@ async def get_impact():
     return results
 
 
-# ===== CREATE IMPACT STAT (Admin only) =====
 @router.post("/", dependencies=[Depends(get_current_user)])
 async def create_impact(stat: ImpactBase):
     stat_dict = stat.model_dump()
@@ -48,7 +45,6 @@ async def create_impact(stat: ImpactBase):
     raise HTTPException(status_code=500, detail="Failed to create impact stat")
 
 
-# ===== GET SINGLE IMPACT =====
 @router.get("/{impact_id}", response_model=ImpactResponse)
 async def get_single_impact(impact_id: str):
 
@@ -63,7 +59,6 @@ async def get_single_impact(impact_id: str):
     return stat
 
 
-# ===== UPDATE IMPACT (Admin only) =====
 @router.put("/{impact_id}", dependencies=[Depends(get_current_user)])
 async def update_impact(impact_id: str, stat: ImpactBase):
 
@@ -83,7 +78,6 @@ async def update_impact(impact_id: str, stat: ImpactBase):
     return {"success": True, "message": "Impact stat updated successfully"}
 
 
-# ===== DELETE IMPACT (Admin only) =====
 @router.delete("/{impact_id}", dependencies=[Depends(get_current_user)])
 async def delete_impact(impact_id: str):
 

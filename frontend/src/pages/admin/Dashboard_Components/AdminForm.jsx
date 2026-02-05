@@ -8,6 +8,8 @@ export default function AdminForm({
   onClose,
   onSuccess,
   fields,
+  createFn,
+  updateFn,
 }) {
   const [formData, setFormData] = useState(initialData || {});
   const [loading, setLoading] = useState(false);
@@ -49,11 +51,6 @@ export default function AdminForm({
     setError("");
 
     try {
-      const { SECTION_CONFIG } = await import("../config/sections");
-      const config = SECTION_CONFIG[section];
-
-      if (!config) throw new Error("Configuration not found");
-
       let payload = { ...formData };
 
       if (section === "projects" && typeof payload.images === "string") {
@@ -62,9 +59,9 @@ export default function AdminForm({
 
       let result;
       if (initialData?.id) {
-        result = await config.updateFn(initialData.id, payload);
+        result = await updateFn(initialData.id, payload);
       } else {
-        result = await config.createFn(payload);
+        result = await createFn(payload);
       }
 
       if (result.success) {

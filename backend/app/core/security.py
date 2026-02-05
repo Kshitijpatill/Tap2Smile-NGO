@@ -7,12 +7,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Config
 SECRET_KEY = os.getenv("JWT_SECRET", "super_secret_fallback_key")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
-# Password Hashing Context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password, hashed_password):

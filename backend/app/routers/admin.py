@@ -47,14 +47,12 @@ class AdminResponse(AdminBase):
 class PasswordResetRequest(BaseModel):
     email: EmailStr
 
-# --- AUTHENTICATION ROUTES ---
 
 
 @router.post("/login")
 async def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
     user = await db.users.find_one({"email": form_data.username})
 
-    # 2. Verify Credentials
     if not user or not verify_password(form_data.password, user.get("hashed_password", user.get("password_hash"))):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

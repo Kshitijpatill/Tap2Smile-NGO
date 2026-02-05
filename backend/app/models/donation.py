@@ -11,7 +11,7 @@ class DonationCreate(BaseModel):
 
 class DonationResponse(DonationCreate):
     id: str
-    status: str  # pending, received, cancelled
+    status: str 
     created_at: datetime
 
     class Config:

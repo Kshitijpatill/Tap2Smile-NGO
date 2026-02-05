@@ -39,14 +39,12 @@ class AdminLogin(BaseModel):
     password: str
 
 
-# Internal DB model
 class AdminInDB(AdminBase):
     password_hash: str
     created_at: datetime
     updated_at: datetime
 
 
-# Response model (what frontend sees)
 class AdminResponse(AdminBase):
     id: str
     created_at: datetime

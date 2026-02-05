@@ -162,6 +162,8 @@ export default function AdminDashboard() {
           section={section}
           initialData={editingItem}
           fields={currentSection.fields}
+          createFn={currentSection.createFn}
+          updateFn={currentSection.updateFn}
           onClose={handleCloseForm}
           onSuccess={() => {
             handleCloseForm();

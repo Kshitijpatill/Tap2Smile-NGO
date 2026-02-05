@@ -9,14 +9,12 @@ from datetime import datetime, date, time
 router = APIRouter()
 
 
-# ===== ID VALIDATION =====
 def validate_object_id(id: str):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid Event ID format")
     return ObjectId(id)
 
 
-# ===== GET ALL EVENTS =====
 @router.get("/", response_model=List[EventResponse])
 async def get_events():
     cursor = db.events.find(
@@ -33,7 +31,6 @@ async def get_events():
     return results
 
 
-# ===== CREATE EVENT (Admin only) =====
 @router.post("/", dependencies=[Depends(get_current_user)])
 async def create_event(event: EventBase):
     event_dict = event.model_dump()
@@ -58,7 +55,6 @@ async def create_event(event: EventBase):
     raise HTTPException(status_code=500, detail="Failed to create event")
 
 
-# ===== GET SINGLE EVENT =====
 @router.get("/{event_id}", response_model=EventResponse)
 async def get_single_event(event_id: str):
 
@@ -73,7 +69,6 @@ async def get_single_event(event_id: str):
     return event
 
 
-# ===== UPDATE EVENT (Admin only) =====
 @router.put("/{event_id}", dependencies=[Depends(get_current_user)])
 async def update_event(event_id: str, event: EventBase):
 
@@ -98,7 +93,6 @@ async def update_event(event_id: str, event: EventBase):
     return {"success": True, "message": "Event updated successfully"}
 
 
-# ===== DELETE EVENT (Admin only) =====
 @router.delete("/{event_id}", dependencies=[Depends(get_current_user)])
 async def delete_event(event_id: str):
 
