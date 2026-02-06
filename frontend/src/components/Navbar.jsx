@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../lib/utils";
-import logo from "../assets/logo.png";
+import logo from "/assets/logo.png";
 import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
@@ -35,17 +35,19 @@ export default function Navbar() {
     return (
         <nav
             className={cn(
-                "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-                scrolled ? "glass shadow-sm py-4 md:py-5" : "bg-transparent py-6 md:py-8"
+                "fixed left-0 right-0 z-50 transition-all duration-300",
+                "top-0 md:top-[44px]", 
+                scrolled ? "glass shadow-sm py-4 md:py-3 md:!top-0" : "bg-transparent py-4 md:py-6"
             )}
-            style={{ top: scrolled ? 0 : 'auto' }}
         >
             <div className="container-custom flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-2 group">
-                    <img src={logo} alt="TapToSmile" className="h-12 md:h-16 w-auto drop-shadow-md transition-transform group-hover:scale-105" />
+                    <img 
+                        src={logo} 
+                        alt="TapToSmile" 
+                        className="h-10 md:h-14 w-auto drop-shadow-md transition-transform group-hover:scale-105 rounded-xl" 
+                    />
                 </Link>
-
-                {/* Desktop Nav */}
                 <div className="hidden md:flex items-center gap-6">
                     <div className="flex items-center gap-8 mr-4 border-r border-brand-border dark:border-white/10 pr-8">
                         {navLinks.map((link) => (
@@ -53,7 +55,7 @@ export default function Navbar() {
                                 key={link.name}
                                 to={link.href}
                                 className={cn(
-                                    "text-base font-bold transition-all hover:text-brand-gold relative group/link",
+                                    "text-sm font-bold transition-all hover:text-brand-gold relative group/link",
                                     location.pathname === link.href ? "text-brand-gold" : "text-brand-text dark:text-gray-300"
                                 )}
                             >
@@ -67,14 +69,13 @@ export default function Navbar() {
                     </div>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
-                        <Link to="/donate" className="btn-primary flex items-center gap-2 px-8 py-3 text-base">
-                            <Heart className="w-5 h-5" />
+                        <Link to="/donate" className="btn-primary flex items-center gap-2 px-6 py-2.5 text-sm">
+                            <Heart className="w-4 h-4" />
                             Donate
                         </Link>
                     </div>
                 </div>
 
-                {/* Mobile Toggle */}
                 <button
                     className="md:hidden p-2 text-brand-text dark:text-white transition-colors"
                     onClick={() => setIsOpen(!isOpen)}
@@ -83,14 +84,13 @@ export default function Navbar() {
                 </button>
             </div>
 
-            {/* Mobile Nav */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-white dark:bg-zinc-900 border-b border-brand-border dark:border-white/5 overflow-hidden"
+                        className="md:hidden bg-white dark:bg-zinc-900 border-b border-brand-border dark:border-white/5 overflow-hidden shadow-xl"
                     >
                         <div className="container-custom py-8 flex flex-col gap-4">
                             <div className="flex items-center justify-between mb-4">
@@ -111,8 +111,8 @@ export default function Navbar() {
                                     {link.name}
                                 </Link>
                             ))}
-                            <Link to="/donate" className="btn-primary w-full text-center py-4 mt-2">
-                                Donate Now
+                            <Link to="/donate" className="btn-primary w-full text-center py-4 mt-2 flex justify-center gap-2">
+                                <Heart className="w-5 h-5" /> Donate Now
                             </Link>
                         </div>
                     </motion.div>

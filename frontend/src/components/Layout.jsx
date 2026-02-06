@@ -1,7 +1,11 @@
+import React from "react";
+import { Outlet } from "react-router-dom"; 
 import Navbar from "./Navbar";
-import Topbar from "./Topbar";
 import Footer from "./Footer";
+import Topbar from "./Topbar";
 import { motion } from "framer-motion";
+
+
 
 export default function Layout({ children }) {
     return (
@@ -13,9 +17,13 @@ export default function Layout({ children }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
                 className="flex-grow pt-24 md:pt-32"
+                
             >
-                {children}
+                
+                <Outlet />
+            {children}
             </motion.main>
+
             <Footer />
         </div>
     );

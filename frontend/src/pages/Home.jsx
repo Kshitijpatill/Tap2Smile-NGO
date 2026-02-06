@@ -153,7 +153,6 @@ export default function Home() {
                 </div>
             </Section>
 
-            {/* Awareness Programs - New from PPTX */}
             <Section className="bg-white dark:bg-[#0A0A0A]">
                 <div className="flex flex-col lg:flex-row items-center gap-20">
                     <div className="w-full lg:w-1/2">
@@ -183,7 +182,6 @@ export default function Home() {
                 </div>
             </Section>
 
-            {/* Featured Programs */}
             <Section className="bg-brand-background dark:bg-zinc-900/50">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <span className="text-brand-gold font-black uppercase tracking-[0.3em] text-xs mb-4 block">Core Initiatives</span>
@@ -218,7 +216,6 @@ export default function Home() {
                                         {program.short_description}
                                     </p>
                                     <div className="mt-auto space-y-6">
-
                                         <Link to={`/programs`} className="btn-primary w-full py-3.5 group text-sm">
                                             Donate Now
                                         </Link>
@@ -230,10 +227,8 @@ export default function Home() {
                 </div>
             </Section>
 
-            {/* CTA Section - Fixed Contrast & Premium Feel */}
             <Section className="py-0">
                 <div className="bg-brand-black dark:bg-zinc-900 rounded-[3rem] px-8 py-20 text-center relative overflow-hidden group">
-                    {/* Animated Background Orbs */}
                     <div className="absolute top-0 left-0 w-96 h-96 bg-brand-gold/10 rounded-full blur-[100px] pointer-events-none" />
                     <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-gold/10 rounded-full blur-[100px] pointer-events-none" />
 
@@ -262,7 +257,6 @@ export default function Home() {
                 </div>
             </Section>
 
-            {/* Small Fix for footer spacing */}
             <div className="h-20 bg-brand-background dark:bg-[#0A0A0A]" />
         </div>
     );
