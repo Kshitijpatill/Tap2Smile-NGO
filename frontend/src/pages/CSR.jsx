@@ -71,7 +71,7 @@ export default function CSR() {
                     <div className="order-1 lg:order-2">
                         <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group border-8 border-brand-background dark:border-zinc-800 aspect-[4/5]">
                             <img
-                                src="/assets/team_mumbai.jpg"
+                                src="/assets/28827765_1957611921223329_6928397958251774922_o.jpeg"
                                 alt="CSR Partnership"
                                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                             />
