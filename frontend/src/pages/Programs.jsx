@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
     Palette, Activity, Heart, GraduationCap, Megaphone, ArrowRight, Utensils,
-    BookOpen, Home, Loader2, AlertCircle, HandHelping, Star, Layers, CheckCircle2
+    BookOpen, Home, Loader2, AlertCircle, HandHelping, Star, Layers, CheckCircle2,
+    Users, Target
 } from "lucide-react";
 import Section from "../components/Section";
 import PageHeader from "../components/PageHeader";
@@ -66,7 +67,33 @@ const programData = [
     }
 ];
 
+const iconMap = {
+    Palette, Activity, Heart, GraduationCap, Megaphone, Star, Target, Users
+};
+
 export default function Programs() {
+    const [programs, setPrograms] = useState(programData);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        api.getPrograms().then((res) => {
+            if (res && Array.isArray(res) && res.length > 0) {
+                const mappedPrograms = res.map(p => ({
+                    id: p.id || p._id,
+                    title: p.title,
+                    description: p.description,
+                    icon: iconMap[p.icon] || Heart,
+                    image: p.image || "/assets/artisticexpression.jpg",
+                    projects: p.projects || []
+                }));
+                setPrograms(mappedPrograms);
+            }
+            setLoading(false);
+        }).catch(() => {
+            setLoading(false);
+        });
+    }, []);
+
     return (
         <div className="dark:bg-[#0A0A0A] transition-colors duration-500 min-h-screen">
             <PageHeader
@@ -77,66 +104,72 @@ export default function Programs() {
 
             {/* Program Sections */}
             <Section className="bg-white dark:bg-[#0A0A0A]">
-                <div className="space-y-24 md:space-y-32">
-                    {programData.map((program, idx) => {
-                        const isEven = idx % 2 === 1;
-                        return (
-                            <div
-                                key={program.id}
-                                className={cn(
-                                    "flex flex-col lg:flex-row items-center gap-12 lg:gap-24",
-                                    isEven ? "lg:flex-row-reverse" : ""
-                                )}
-                            >
-                                {/* Image Side */}
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    viewport={{ once: true }}
-                                    className="w-full lg:w-1/2"
+                {loading ? (
+                    <div className="flex justify-center items-center py-20">
+                        <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
+                    </div>
+                ) : (
+                    <div className="space-y-24 md:space-y-32">
+                        {programs.map((program, idx) => {
+                            const isEven = idx % 2 === 1;
+                            return (
+                                <div
+                                    key={program.id}
+                                    className={cn(
+                                        "flex flex-col lg:flex-row items-center gap-12 lg:gap-24",
+                                        isEven ? "lg:flex-row-reverse" : ""
+                                    )}
                                 >
-                                    <div className="relative aspect-video lg:aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 md:border-8 border-brand-background dark:border-zinc-800">
-                                        <img
-                                            src={program.image}
-                                            alt={program.title}
-                                            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-                                        />
-                                    </div>
-                                </motion.div>
-
-                                {/* Content Side */}
-                                <div className="w-full lg:w-1/2 space-y-6 md:space-y-8">
-                                    <div className="flex items-center gap-5">
-                                        <div className="w-16 h-16 bg-brand-gold/10 dark:bg-brand-gold/5 rounded-2xl flex items-center justify-center shrink-0">
-                                            <program.icon className="w-8 h-8 text-brand-gold" />
+                                    {/* Image Side */}
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        viewport={{ once: true }}
+                                        className="w-full lg:w-1/2"
+                                    >
+                                        <div className="relative aspect-video lg:aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 md:border-8 border-brand-background dark:border-zinc-800">
+                                            <img
+                                                src={program.image}
+                                                alt={program.title}
+                                                className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                                            />
                                         </div>
-                                        <h2 className="text-3xl md:text-5xl font-black dark:text-white">{program.title}</h2>
-                                    </div>
-                                    <p className="text-brand-text-muted dark:text-gray-400 text-lg md:text-xl leading-relaxed">
-                                        {program.description}
-                                    </p>
+                                    </motion.div>
 
-                                    {/* Projects under each program */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        {program.projects.map((project, i) => (
-                                            <div key={i} className="flex items-center gap-3 bg-brand-background dark:bg-zinc-900/50 p-4 rounded-2xl border border-brand-border dark:border-white/5">
-                                                <div className="w-2 h-2 rounded-full bg-brand-gold shrink-0" />
-                                                <span className="font-bold text-sm dark:text-gray-200">{project}</span>
+                                    {/* Content Side */}
+                                    <div className="w-full lg:w-1/2 space-y-6 md:space-y-8">
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-16 h-16 bg-brand-gold/10 dark:bg-brand-gold/5 rounded-2xl flex items-center justify-center shrink-0">
+                                                <program.icon className="w-8 h-8 text-brand-gold" />
                                             </div>
-                                        ))}
-                                    </div>
+                                            <h2 className="text-3xl md:text-5xl font-black dark:text-white">{program.title}</h2>
+                                        </div>
+                                        <p className="text-brand-text-muted dark:text-gray-400 text-lg md:text-xl leading-relaxed">
+                                            {program.description}
+                                        </p>
 
-                                    <div className="pt-2">
-                                        <Link to="/donate" className="btn-primary w-full md:w-auto flex items-center justify-center gap-2">
-                                            <Heart className="w-4 h-4 fill-white" />
-                                            <span>Support this Program</span>
-                                        </Link>
+                                        {/* Projects under each program */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {program.projects.map((project, i) => (
+                                                <div key={i} className="flex items-center gap-3 bg-brand-background dark:bg-zinc-900/50 p-4 rounded-2xl border border-brand-border dark:border-white/5">
+                                                    <div className="w-2 h-2 rounded-full bg-brand-gold shrink-0" />
+                                                    <span className="font-bold text-sm dark:text-gray-200">{project}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="pt-2">
+                                            <Link to="/donate" className="btn-primary w-full md:w-auto flex items-center justify-center gap-2">
+                                                <Heart className="w-4 h-4 fill-white" />
+                                                <span>Support this Program</span>
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </Section>
 
             {/* Tap To Smile Academy Table */}

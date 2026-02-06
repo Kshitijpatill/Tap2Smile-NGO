@@ -35,7 +35,7 @@ const homePrograms = [
         title: "Program Vidya",
         desc: "Educational support, kits and career guidance.",
         icon: GraduationCap,
-        img: "/assets/2d43109a-6240-424a-9e6b-715ce40f513d.jpg"
+        img: "/assets/academicknowledge.jpg"
     }
 ];
 

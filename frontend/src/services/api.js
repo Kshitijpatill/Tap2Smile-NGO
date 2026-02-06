@@ -80,6 +80,19 @@ export const api = {
         }
     },
 
+    submitDonation: async (data) => {
+        try {
+            const response = await fetch(`${BASE_URL}/donations`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            return await handleResponse(response);
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    },
+
     submitContact: async (data) => {
         try {
             const response = await fetch(`${BASE_URL}/contact`, {
