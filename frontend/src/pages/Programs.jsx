@@ -46,7 +46,7 @@ const programData = [
             {
                 name: "Music Training",
                 description: "Vocal and instrumental music lessons",
-                image: "/assets/artisticexpression.jpg"
+                image: "/assets/639592f1-9166-44c2-918c-f507c4925456.jpg"
             },
             {
                 name: "Talent Showcases",
@@ -70,7 +70,7 @@ const programData = [
             {
                 name: "Mental Health Talks",
                 description: "Counseling and awareness sessions on mental wellness",
-                image: "/assets/7dae08d9-696a-4a7b-badd-88611cea6d80.jpg"
+                image: "/assets/76687e11-0b10-4884-86fa-de9b18f3fe73.jpg"
             },
             {
                 name: "Sports Day",
@@ -94,7 +94,7 @@ const programData = [
             {
                 name: "Food Drives",
                 description: "Monthly food distribution to underprivileged communities",
-                image: "/assets/seva.jpg"
+                image: "/assets/1fdd4365-acc4-42ce-921e-dc2f57cf3250.jpg"
             },
             {
                 name: "Clothes Distribution",
@@ -123,12 +123,12 @@ const programData = [
             {
                 name: "Scholarship Programs",
                 description: "Financial support for school admissions and fees",
-                image: "/assets/academicknowledge.jpg"
+                image: "/assets/15377658-780a-4ad8-aeb7-1984cb3f0552.jpg"
             },
             {
                 name: "School Kits Distribution",
                 description: "Providing books, stationery, and uniforms",
-                image: "/assets/15377658-780a-4ad8-aeb7-1984cb3f0552.jpg"
+                image: "/assets/5c8cbd1b-52b0-47ac-abaa-abec8cc4f1fd.jpg"
             },
             {
                 name: "Career Counseling",
@@ -157,17 +157,17 @@ const programData = [
             {
                 name: "Road Shows",
                 description: "Community outreach and awareness campaigns",
-                image: "/assets/0f250353-8dff-4433-8402-a5507098fe96.JPG"
+                image: "/assets/70c136a8-1989-4c00-a0bb-095be19602cb.jpg"
             },
             {
                 name: "Marathons",
                 description: "Charity runs for social causes",
-                image: "/assets/86b0333e-99d5-4d90-8b01-e07595cc170d.jpg"
+                image: "/assets/8b309b61-ced4-4377-b9af-c3a8383b7914.jpg"
             },
             {
                 name: "Art Campaigns",
                 description: "Street art and exhibitions for social messages",
-                image: "/assets/305768958_3254057918245383_9122992633165420375_n.jpeg"
+                image: "/assets/7285275e-e452-47fd-a3cd-9f1011953c33.jpg"
             }
         ]
     }
