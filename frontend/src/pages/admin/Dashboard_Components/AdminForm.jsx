@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Save, Loader2 } from "lucide-react";
+import { X, Save, Loader2, AlertCircle } from "lucide-react";
 import { api } from "../../../services/api";
 
 export default function AdminForm({
@@ -53,9 +53,13 @@ export default function AdminForm({
     try {
       let payload = { ...formData };
 
+      // ✅ FIX: Handle projects images
       if (section === "projects" && typeof payload.images === "string") {
         payload.images = [payload.images];
       }
+
+      // ✅ FIX: Log what we're sending for debugging
+      console.log("📤 Submitting data:", payload);
 
       let result;
       if (initialData?.id) {
@@ -64,15 +68,31 @@ export default function AdminForm({
         result = await createFn(payload);
       }
 
+      console.log("✅ Result:", result);
+
       if (result.success) {
         onSuccess();
         onClose();
       } else {
-        setError(result.message || "Operation failed");
+        // ✅ FIX: Better error message display
+        setError(result.message || "Operation failed. Please check your input.");
       }
     } catch (err) {
-      console.error(err);
-      setError(err.message || "An error occurred");
+      console.error("❌ Form Error:", err);
+      
+      // ✅ FIX: Handle 422 validation errors specifically
+      if (err.response?.status === 422) {
+        const details = err.response?.data?.detail;
+        if (Array.isArray(details)) {
+          // Pydantic validation error format
+          const errorMessages = details.map(d => `${d.loc[1]}: ${d.msg}`).join(", ");
+          setError(`Validation Error: ${errorMessages}`);
+        } else {
+          setError("Validation failed. Please check all required fields.");
+        }
+      } else {
+        setError(err.message || "An error occurred");
+      }
     } finally {
       setLoading(false);
     }
@@ -82,7 +102,7 @@ export default function AdminForm({
     const commonClasses =
       "w-full p-3 bg-zinc-800 rounded-xl text-white border border-zinc-700 focus:border-brand-gold outline-none";
 
-    // 1. Text / Number / Date / Password (UPDATED)
+    // 1. Text / Number / Date / Password
     if (["text", "number", "date", "password"].includes(field.type)) {
       return (
         <input
@@ -208,9 +228,14 @@ export default function AdminForm({
             : `Add New ${section.slice(0, -1)}`}
         </h2>
 
+        {/* ✅ FIX: Better error display with icon */}
         {error && (
-          <div className="bg-red-500/20 text-red-400 p-4 rounded-xl mb-6 border border-red-500/30">
-            {error}
+          <div className="bg-red-500/20 text-red-400 p-4 rounded-xl mb-6 border border-red-500/30 flex items-start gap-3">
+            <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold">Error</p>
+              <p className="text-sm mt-1">{error}</p>
+            </div>
           </div>
         )}
 
@@ -221,14 +246,19 @@ export default function AdminForm({
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-black"
+              className="btn-primary flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-black disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Saving...
+                </>
               ) : (
-                <Save className="w-5 h-5" />
+                <>
+                  <Save className="w-5 h-5" />
+                  Save Changes
+                </>
               )}
-              Save Changes
             </button>
           </div>
         </form>
