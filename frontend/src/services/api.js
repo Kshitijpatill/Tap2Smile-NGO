@@ -58,6 +58,15 @@ export const api = {
         }
     },
 
+    getImpactStats: async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/impact`);
+            return await handleResponse(response);
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    },
+
     submitVolunteer: async (data) => {
         try {
             const response = await fetch(`${BASE_URL}/volunteers`, {

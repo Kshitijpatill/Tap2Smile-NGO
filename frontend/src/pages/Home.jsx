@@ -7,12 +7,16 @@ import HeroSlider from "../components/HeroSlider";
 import { api } from "../services/api";
 import { cn } from "../lib/utils";
 
-const stats = [
+const defaultStats = [
     { label: "Lives Impacted", value: "200,000+", icon: Users },
     { label: "Meals Served", value: "500,000+", icon: Heart },
     { label: "Children Educated", value: "10,000+", icon: GraduationCap },
     { label: "Volunteers", value: "1,200+", icon: HandHelping },
 ];
+
+const iconMap = {
+    Users, Heart, GraduationCap, HandHelping, Star, Target, Palette, Activity
+};
 
 const homePrograms = [
     {
@@ -36,6 +40,24 @@ const homePrograms = [
 ];
 
 export default function Home() {
+    const [stats, setStats] = useState(defaultStats);
+
+    useEffect(() => {
+        api.getImpactStats().then((res) => {
+            if (res && Array.isArray(res) && res.length > 0) {
+                const mappedStats = res.map(s => ({
+                    label: s.title,
+                    value: s.value,
+                    icon: iconMap[s.icon] || Heart
+                }));
+                setStats(mappedStats);
+            }
+        }).catch(error => {
+            console.error("Failed to fetch impact stats:", error);
+            // If API call fails, defaultStats will be used as initial state.
+        });
+    }, []);
+
     return (
         <div className="overflow-hidden bg-brand-background dark:bg-[#0A0A0A] transition-colors duration-500">
             {/* Modern Hero Slider */}
@@ -54,7 +76,7 @@ export default function Home() {
                                 className="glass py-10 rounded-3xl md:rounded-[2rem] flex flex-col items-center group hover:bg-brand-gold/5 transition-colors border-white/10"
                             >
                                 <div className="p-3 bg-brand-gold/5 rounded-2xl mb-4">
-                                    <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-brand-gold" />
+                                    {stat.icon && <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-brand-gold" />}
                                 </div>
                                 <h3 className="text-2xl md:text-3xl font-black text-brand-black dark:text-white mb-1">{stat.value}</h3>
                                 <p className="text-brand-text-muted dark:text-gray-500 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">{stat.label}</p>

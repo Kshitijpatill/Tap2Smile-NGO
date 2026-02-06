@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send, UserPlus, CheckCircle2, Shield } from "lucide-react";
 import Section from "../components/Section";
 import { api } from "../services/api";
