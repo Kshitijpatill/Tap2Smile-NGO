@@ -14,13 +14,11 @@ import { api } from "../../services/api";
 export default function AdminLogin() {
   const navigate = useNavigate();
 
-  // Login State
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Forgot Password State
   const [showForgot, setShowForgot] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetStatus, setResetStatus] = useState({
@@ -29,18 +27,15 @@ export default function AdminLogin() {
     success: false,
   });
 
-  // 1. FLOW CHECK: If already logged in, go to dashboard
   useEffect(() => {
     const checkExistingSession = async () => {
       const token = localStorage.getItem("admin_token");
       if (token) {
-        // Validate token validity
         try {
           const res = await api.getAdminProfile();
           if (res.success) {
             navigate("/admin/dashboard");
           } else {
-            // Token invalid/expired - clear it
             localStorage.removeItem("admin_token");
           }
         } catch (e) {
@@ -51,7 +46,6 @@ export default function AdminLogin() {
     checkExistingSession();
   }, [navigate]);
 
-  // 2. LOGIN LOGIC
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -67,8 +61,6 @@ export default function AdminLogin() {
       const res = await api.adminLogin(email, password);
 
       if (res.success) {
-        // Token is stored in localStorage by api.js
-        // Redirect to dashboard
         navigate("/admin/dashboard");
       } else {
         setError("Invalid credentials. Please try again.");
@@ -80,22 +72,19 @@ export default function AdminLogin() {
     }
   };
 
-  // 3. RESET PASSWORD LOGIC
   const handleReset = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
+
     setResetStatus({ loading: true, msg: "", success: false });
 
-    // Assuming you added requestPasswordReset to api.js as discussed previously
-    // If not, this is a placeholder for that API call
     try {
-      // Ideally: await api.requestPasswordReset(resetEmail);
-      // For now, simulating success since we updated backend logic previously
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const cleanEmail = resetEmail.trim();
+      const res = await api.requestPasswordReset(cleanEmail);
 
       setResetStatus({
         loading: false,
-        msg: "If this email exists, a reset link/code has been sent.",
-        success: true,
+        msg: res.message || "If registered, email sent.",
+        success: res.success,
       });
     } catch (err) {
       setResetStatus({
@@ -109,7 +98,6 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* HEADER */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-brand-gold to-yellow-300 rounded-2xl mb-4 shadow-lg shadow-yellow-500/20">
             <Lock className="text-black" size={32} />
@@ -120,7 +108,6 @@ export default function AdminLogin() {
           <p className="text-gray-400 font-medium">Secure Admin Portal</p>
         </div>
 
-        {/* LOGIN CARD */}
         <div className="bg-zinc-800/50 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/10">
           {error && (
             <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
@@ -203,7 +190,6 @@ export default function AdminLogin() {
         </p>
       </div>
 
-      {/* --- FORGOT PASSWORD MODAL --- */}
       {showForgot && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
           <div className="bg-zinc-900 w-full max-w-sm rounded-3xl p-6 border border-zinc-800 shadow-2xl relative">
@@ -218,10 +204,12 @@ export default function AdminLogin() {
               <h3 className="text-xl font-bold text-white mb-2">
                 Reset Password
               </h3>
-              <p className="text-sm text-gray-400">
-                Enter your email address. We'll send you instructions to reset
-                your password.
-              </p>
+              {!resetStatus.success && (
+                <p className="text-sm text-gray-400">
+                  Enter your email address. We'll send you instructions to reset
+                  your password.
+                </p>
+              )}
             </div>
 
             {!resetStatus.success ? (
@@ -248,20 +236,33 @@ export default function AdminLogin() {
                 </button>
               </form>
             ) : (
-              <div className="bg-green-500/10 border border-green-500/20 p-4 rounded-xl text-center">
-                <CheckCircle
-                  className="mx-auto text-green-500 mb-2"
-                  size={32}
-                />
-                <p className="text-green-400 font-medium text-sm">
-                  {resetStatus.msg}
-                </p>
-                <button
-                  onClick={() => setShowForgot(false)}
-                  className="mt-4 text-xs text-gray-400 hover:text-white underline"
-                >
-                  Close
-                </button>
+              <div className="bg-green-500/10 border border-green-500/20 p-6 rounded-xl text-center space-y-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-500/20 mb-2">
+                  <CheckCircle className="text-green-500" size={24} />
+                </div>
+
+                <div>
+                  <h4 className="text-white font-bold mb-1">Email Sent!</h4>
+                  <p className="text-green-400/80 text-sm leading-relaxed">
+                    {resetStatus.msg}
+                  </p>
+                </div>
+
+                <div className="pt-2 flex flex-col gap-3">
+                  <button
+                    onClick={() => handleReset()}
+                    className="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium rounded-lg transition-colors border border-zinc-700"
+                  >
+                    Resend Reset Link
+                  </button>
+
+                  <button
+                    onClick={() => setShowForgot(false)}
+                    className="text-xs text-gray-500 hover:text-white transition-colors"
+                  >
+                    Close Window
+                  </button>
+                </div>
               </div>
             )}
           </div>

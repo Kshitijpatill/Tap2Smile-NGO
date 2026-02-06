@@ -179,7 +179,7 @@ async def send_password_reset_email(to_email: str, temp_password: str):
     """
 
     message = MessageSchema(
-        subject="🔐 Admin Password Reset",
+        subject="Tap2Smile Admin Password Reset",
         recipients=[to_email],
         body=html,
         subtype=MessageType.html
