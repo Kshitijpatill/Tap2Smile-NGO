@@ -1,5 +1,5 @@
 import axios from "axios";
-
+axios.defaults.withCredentials = true;
 const API_URL = "/api";
 
 const getAuthHeader = () => {
@@ -18,6 +18,18 @@ const handleResponse = async (request) => {
             message: error.response?.data?.detail || "Something went wrong"
         };
     }
+};
+
+// ✅ FIX: Helper function to clean data before sending to API
+const cleanData = (data) => {
+    const cleaned = { ...data };
+    Object.keys(cleaned).forEach(key => {
+        // Convert empty strings to null for optional fields
+        if (cleaned[key] === "") {
+            cleaned[key] = null;
+        }
+    });
+    return cleaned;
 };
 
 export const api = {
@@ -55,7 +67,7 @@ export const api = {
         return handleResponse(axios.get(`${API_URL}/admin/me`, { headers: getAuthHeader() }));
     },
     getAdmins: async () => handleResponse(axios.get(`${API_URL}/admin/`, { headers: getAuthHeader() })),
-    createAdmin: async (data) => handleResponse(axios.post(`${API_URL}/admin/`, data, { headers: getAuthHeader() })),
+    createAdmin: async (data) => handleResponse(axios.post(`${API_URL}/admin/`, cleanData(data), { headers: getAuthHeader() })),
     deleteAdmin: async (id) => handleResponse(axios.delete(`${API_URL}/admin/${id}`, { headers: getAuthHeader() })),
 
 
@@ -75,14 +87,31 @@ export const api = {
             return { success: false, data: [] };
         }
     },
-    createProgram: async (data) => handleResponse(axios.post(`${API_URL}/programs/`, data, { headers: getAuthHeader() })),
-    updateProgram: async (id, data) => handleResponse(axios.patch(`${API_URL}/programs/${id}`, data, { headers: getAuthHeader() })),
+    // ✅ FIX: Clean data before sending
+    createProgram: async (data) => handleResponse(axios.post(`${API_URL}/programs/`, cleanData(data), { headers: getAuthHeader() })),
+    updateProgram: async (id, data) =>
+        handleResponse(
+            axios.put(`${API_URL}/programs/${id}`, cleanData(data), {
+                headers: getAuthHeader()
+            })
+        ),
+
     deleteProgram: async (id) => handleResponse(axios.delete(`${API_URL}/programs/${id}`, { headers: getAuthHeader() })),
 
     getProjects: async () => handleResponse(axios.get(`${API_URL}/projects/`)),
-    getAdminProjects: async () => handleResponse(axios.get(`${API_URL}/projects/admin`, { headers: getAuthHeader() })),
-    createProject: async (data) => handleResponse(axios.post(`${API_URL}/projects/`, data, { headers: getAuthHeader() })),
-    updateProject: async (id, data) => handleResponse(axios.patch(`${API_URL}/projects/${id}`, data, { headers: getAuthHeader() })),
+    getAdminProjects: async () =>
+        handleResponse(
+            axios.get(`${API_URL}/projects/admin`, {
+                headers: {
+                    ...getAuthHeader(),
+                    "Content-Type": "application/json"
+                }
+            })
+        ),
+
+    // ✅ FIX: Clean data before sending
+    createProject: async (data) => handleResponse(axios.post(`${API_URL}/projects/`, cleanData(data), { headers: getAuthHeader() })),
+    updateProject: async (id, data) => handleResponse(axios.patch(`${API_URL}/projects/${id}`, cleanData(data), { headers: getAuthHeader() })),
     deleteProject: async (id) => handleResponse(axios.delete(`${API_URL}/projects/${id}`, { headers: getAuthHeader() })),
 
 
@@ -95,13 +124,15 @@ export const api = {
             return { success: false, data: [] };
         }
     },
-    createEvent: async (data) => handleResponse(axios.post(`${API_URL}/events/`, data, { headers: getAuthHeader() })),
-    updateEvent: async (id, data) => handleResponse(axios.patch(`${API_URL}/events/${id}`, data, { headers: getAuthHeader() })),
+    // ✅ FIX: Clean data before sending
+    createEvent: async (data) => handleResponse(axios.post(`${API_URL}/events/`, cleanData(data), { headers: getAuthHeader() })),
+    updateEvent: async (id, data) => handleResponse(axios.patch(`${API_URL}/events/${id}`, cleanData(data), { headers: getAuthHeader() })),
     deleteEvent: async (id) => handleResponse(axios.delete(`${API_URL}/events/${id}`, { headers: getAuthHeader() })),
 
     getImpact: async () => handleResponse(axios.get(`${API_URL}/impact/`)),
-    createImpact: async (data) => handleResponse(axios.post(`${API_URL}/impact/`, data, { headers: getAuthHeader() })),
-    updateImpact: async (id, data) => handleResponse(axios.patch(`${API_URL}/impact/${id}`, data, { headers: getAuthHeader() })),
+    // ✅ FIX: Clean data before sending
+    createImpact: async (data) => handleResponse(axios.post(`${API_URL}/impact/`, cleanData(data), { headers: getAuthHeader() })),
+    updateImpact: async (id, data) => handleResponse(axios.patch(`${API_URL}/impact/${id}`, cleanData(data), { headers: getAuthHeader() })),
     deleteImpact: async (id) => handleResponse(axios.delete(`${API_URL}/impact/${id}`, { headers: getAuthHeader() })),
 
     submitVolunteer: async (data) => {
@@ -112,14 +143,14 @@ export const api = {
             city: data.city,
             interest_area: data.interest_area
         };
-        return handleResponse(axios.post(`${API_URL}/volunteers/`, payload));
+        return handleResponse(axios.post(`${API_URL}/volunteers/`, cleanData(payload)));
     },
     deleteVolunteer: async (id) => handleResponse(axios.delete(`${API_URL}/volunteers/${id}`, { headers: getAuthHeader() })),
-    updateVolunteer: async (id, data) => handleResponse(axios.patch(`${API_URL}/volunteers/${id}`, data, { headers: getAuthHeader() })),
+    updateVolunteer: async (id, data) => handleResponse(axios.patch(`${API_URL}/volunteers/${id}`, cleanData(data), { headers: getAuthHeader() })),
     getAdminVolunteers: async () => handleResponse(axios.get(`${API_URL}/volunteers/`, { headers: getAuthHeader() })),
     updateVolunteerStatus: async (id, status) => handleResponse(axios.patch(`${API_URL}/volunteers/${id}/status`, { status }, { headers: getAuthHeader() })),
 
-    submitContact: async (data) => handleResponse(axios.post(`${API_URL}/contact/`, data)),
+    submitContact: async (data) => handleResponse(axios.post(`${API_URL}/contact/`, cleanData(data))),
     getAdminMessages: async () => handleResponse(axios.get(`${API_URL}/contact/`, { headers: getAuthHeader() })),
     deleteMessage: async (id) => handleResponse(axios.delete(`${API_URL}/contact/${id}`, { headers: getAuthHeader() })),
 
@@ -131,11 +162,11 @@ export const api = {
             amount: parseFloat(data.amount),
             message: "Website Donation Pledge"
         };
-        return handleResponse(axios.post(`${API_URL}/donations/`, payload));
+        return handleResponse(axios.post(`${API_URL}/donations/`, cleanData(payload)));
     },
     getAdminDonations: async () => handleResponse(axios.get(`${API_URL}/donations/`, { headers: getAuthHeader() })),
-    createDonation: async (data) => handleResponse(axios.post(`${API_URL}/donations/`, data, { headers: getAuthHeader() })),
-    updateDonation: async (id, data) => handleResponse(axios.patch(`${API_URL}/donations/${id}`, data, { headers: getAuthHeader() })),
+    createDonation: async (data) => handleResponse(axios.post(`${API_URL}/donations/`, cleanData(data), { headers: getAuthHeader() })),
+    updateDonation: async (id, data) => handleResponse(axios.patch(`${API_URL}/donations/${id}`, cleanData(data), { headers: getAuthHeader() })),
     updateDonationStatus: async (id, status) => handleResponse(axios.patch(`${API_URL}/donations/${id}/status`, { status }, { headers: getAuthHeader() })),
     deleteDonation: async (id) => handleResponse(axios.delete(`${API_URL}/donations/${id}`, { headers: getAuthHeader() }))
 };

@@ -76,7 +76,7 @@ async def get_single_program(program_id: str):
     return program
 
 
-@router.put("/{program_id}", dependencies=[Depends(get_current_user)], response_model=ProgramResponse)
+@router.patch("/{program_id}", dependencies=[Depends(get_current_user)], response_model=ProgramResponse)
 async def update_program(program_id: str, program: ProgramBase):
     program_obj_id = validate_object_id(program_id)
     
