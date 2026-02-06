@@ -11,6 +11,13 @@ export default function Contact() {
     const [searchParams] = useSearchParams();
     const defaultTab = searchParams.get("tab") === "volunteer" ? "volunteer" : "contact";
     const [activeTab, setActiveTab] = useState(defaultTab);
+
+    useEffect(() => {
+        const tab = searchParams.get("tab");
+        if (tab === "volunteer") setActiveTab("volunteer");
+        else if (tab === "contact") setActiveTab("contact");
+    }, [searchParams]);
+
     const [formStatus, setFormStatus] = useState({ loading: false, success: false, error: null });
 
     const [contactData, setContactData] = useState({ name: "", email: "", subject: "", message: "" });
@@ -55,7 +62,7 @@ export default function Contact() {
                             <img
                                 src="/assets/team_pune.jpg"
                                 alt="Tap To Smile Volunteers"
-                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                                className="w-full h-full object-cover md:grayscale group-hover:grayscale-0 transition-all duration-700"
                             />
                             <div className="absolute inset-0 bg-brand-gold/10 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
@@ -90,34 +97,34 @@ export default function Contact() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-24">
                     {/* Info Side */}
                     <div className="lg:col-span-1 space-y-10">
-                        <div className="bg-white dark:bg-zinc-900 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-brand-border dark:border-white/5 shadow-2xl relative overflow-hidden group">
+                        <div className="bg-white dark:bg-zinc-900 p-8 md:p-10 lg:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-brand-border dark:border-white/5 shadow-2xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-                            <h3 className="text-3xl font-black mb-12 dark:text-white relative z-10">Reach Us</h3>
+                            <h3 className="text-2xl md:text-3xl font-black mb-8 md:mb-12 dark:text-white relative z-10">Reach Us</h3>
 
-                            <div className="space-y-12 relative z-10">
+                            <div className="space-y-8 md:space-y-12 relative z-10">
                                 {[
                                     { label: "Our Location", value: "Mumbai, Maharashtra, India", icon: MapPin },
                                     { label: "Phone Number", value: "+91 78766 02339", icon: Phone },
                                     { label: "Email Address", value: "tap2smile@gmail.com", icon: Mail }
                                 ].map((item, idx) => (
-                                    <div key={idx} className="flex items-start gap-6 group/item">
-                                        <div className="w-14 h-14 bg-brand-gold/10 dark:bg-brand-gold/5 rounded-[1.25rem] flex items-center justify-center shrink-0 group-hover/item:rotate-6 transition-transform">
-                                            <item.icon className="text-brand-gold h-6 w-6" />
+                                    <div key={idx} className="flex items-start gap-4 md:gap-6 group/item">
+                                        <div className="w-12 h-12 md:w-14 md:h-14 bg-brand-gold/10 dark:bg-brand-gold/5 rounded-[1.25rem] flex items-center justify-center shrink-0 group-hover/item:rotate-6 transition-transform">
+                                            <item.icon className="text-brand-gold h-5 w-5 md:h-6 md:w-6" />
                                         </div>
                                         <div>
-                                            <p className="font-black text-[10px] uppercase tracking-[0.2em] text-brand-text-muted dark:text-gray-500 mb-2">{item.label}</p>
-                                            <p className="text-brand-black dark:text-gray-300 font-bold text-lg leading-tight">{item.value}</p>
+                                            <p className="font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-brand-text-muted dark:text-gray-500 mb-1 md:mb-2">{item.label}</p>
+                                            <p className="text-brand-black dark:text-gray-300 font-bold text-base md:text-lg leading-tight">{item.value}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="mt-16 pt-16 border-t border-brand-border dark:border-white/5 relative z-10">
-                                <h4 className="font-black text-xs uppercase tracking-widest mb-8 dark:text-white">Our Impact Hubs</h4>
-                                <div className="flex gap-4">
-                                    <span className="px-4 py-2 rounded-xl bg-brand-background dark:bg-black/40 text-[10px] font-black uppercase dark:text-gray-400">Mumbai</span>
-                                    <span className="px-4 py-2 rounded-xl bg-brand-background dark:bg-black/40 text-[10px] font-black uppercase dark:text-gray-400">Pune</span>
-                                    <span className="px-4 py-2 rounded-xl bg-brand-background dark:bg-black/40 text-[10px] font-black uppercase dark:text-gray-400">Chandigarh</span>
+                            <div className="mt-12 md:mt-16 pt-10 md:pt-16 border-t border-brand-border dark:border-white/5 relative z-10">
+                                <h4 className="font-black text-xs uppercase tracking-widest mb-6 md:mb-8 dark:text-white">Our Impact Hubs</h4>
+                                <div className="flex flex-wrap gap-3 md:gap-4">
+                                    <span className="px-3 md:px-4 py-2 rounded-xl bg-brand-background dark:bg-black/40 text-[9px] md:text-[10px] font-black uppercase dark:text-gray-400">Mumbai</span>
+                                    <span className="px-3 md:px-4 py-2 rounded-xl bg-brand-background dark:bg-black/40 text-[9px] md:text-[10px] font-black uppercase dark:text-gray-400">Pune</span>
+                                    <span className="px-3 md:px-4 py-2 rounded-xl bg-brand-background dark:bg-black/40 text-[9px] md:text-[10px] font-black uppercase dark:text-gray-400">Chandigarh</span>
                                 </div>
                             </div>
                         </div>
@@ -265,8 +272,6 @@ export default function Contact() {
                                                         <input
                                                             required
                                                             type="tel"
-                                                            minLength={10} 
-                                                            maxLength={15}
                                                             value={volunteerData.phone}
                                                             onChange={(e) => setVolunteerData({ ...volunteerData, phone: e.target.value })}
                                                             className="w-full px-8 py-5 rounded-[1.5rem] bg-brand-background dark:bg-black/40 border border-brand-border dark:border-white/5 focus:outline-none focus:border-brand-gold dark:text-white transition-all shadow-inner"

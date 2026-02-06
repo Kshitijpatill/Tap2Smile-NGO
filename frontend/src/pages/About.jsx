@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Heart, Target, Eye, Quote, Star, Palette, Brain, Smile, Droplets, Briefcase, Leaf, MessageCircle, FlaskConical, Activity, Globe, Users, Clock, Layers } from "lucide-react";
 import Section from "../components/Section";
 import { motion } from "framer-motion";
@@ -77,7 +78,7 @@ export default function About() {
                             <img
                                 src="/assets/0f250353-8dff-4433-8402-a5507098fe96.JPG"
                                 alt="Impact"
-                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                                className="w-full h-full object-cover md:grayscale group-hover:grayscale-0 transition-all duration-700"
                             />
                             <div className="absolute inset-0 bg-brand-gold/20 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
@@ -123,7 +124,7 @@ export default function About() {
                                 <img
                                     src="/assets/founder.jpg"
                                     alt="Abhimanyu Upadhyay"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    className="w-full h-full object-cover md:grayscale group-hover:grayscale-0 transition-transform duration-700 group-hover:scale-105"
                                 />
                                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
                                     <h3 className="text-2xl font-bold">Abhimanyu Upadhyay</h3>
@@ -322,6 +323,44 @@ export default function About() {
                             </div>
                         </motion.div>
                     ))}
+                </div>
+            </Section>
+            {/* Certificates & Transparency Section */}
+            <Section className="bg-brand-background dark:bg-[#0A0A0A]">
+                <div className="max-w-4xl mx-auto text-center">
+                    <span className="text-brand-gold font-black uppercase tracking-[0.3em] text-xs mb-4 block">Trust & Governance</span>
+                    <h2 className="text-4xl md:text-5xl font-black mb-12 dark:text-white">Our <span className="text-brand-gold">Certifications</span></h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <motion.div
+                            whileHover={{ y: -10 }}
+                            className="glass p-8 rounded-[2.5rem] border border-brand-border dark:border-white/5 flex flex-col items-center"
+                        >
+                            <div className="w-full aspect-[1/1.414] bg-white dark:bg-zinc-800 rounded-2xl mb-8 shadow-inner flex items-center justify-center border-4 border-dashed border-brand-border dark:border-white/10 relative group overflow-hidden">
+                                <span className="text-brand-text-muted dark:text-gray-500 font-bold text-sm">Official Registration Certificate</span>
+                                {/* User should replace this with actual certificate image */}
+                                <div className="absolute inset-0 bg-brand-gold/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Link to="/contact" className="btn-primary text-xs py-2 px-4">Request Copy</Link>
+                                </div>
+                            </div>
+                            <h4 className="text-xl font-bold dark:text-white mb-2">Registration 739/2021</h4>
+                            <p className="text-brand-text-muted dark:text-gray-400 text-sm">Governed under the Societies Registration Act XXI of 1860</p>
+                        </motion.div>
+
+                        <motion.div
+                            whileHover={{ y: -10 }}
+                            className="glass p-8 rounded-[2.5rem] border border-brand-border dark:border-white/5 flex flex-col items-center"
+                        >
+                            <div className="w-full aspect-[1/1.414] bg-white dark:bg-zinc-800 rounded-2xl mb-8 shadow-inner flex items-center justify-center border-4 border-dashed border-brand-border dark:border-white/10 relative group overflow-hidden">
+                                <span className="text-brand-text-muted dark:text-gray-500 font-bold text-sm">80G Tax Exemption Status</span>
+                                <div className="absolute inset-0 bg-brand-gold/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Link to="/donate" className="btn-primary text-xs py-2 px-4">Donate & Save Tax</Link>
+                                </div>
+                            </div>
+                            <h4 className="text-xl font-bold dark:text-white mb-2">12A & 80G Certified</h4>
+                            <p className="text-brand-text-muted dark:text-gray-400 text-sm">Donations are 50% tax exempt under Section 80G of IT Act</p>
+                        </motion.div>
+                    </div>
                 </div>
             </Section>
         </div>

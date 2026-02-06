@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet } from "react-router-dom"; 
+import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Topbar from "./Topbar";
@@ -16,12 +16,10 @@ export default function Layout({ children }) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="flex-grow pt-24 md:pt-32"
-                
+                className="flex-grow pt-48 md:pt-64 lg:pt-72"
             >
-                
                 <Outlet />
-            {children}
+                {children}
             </motion.main>
 
             <Footer />
