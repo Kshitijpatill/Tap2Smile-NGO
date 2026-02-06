@@ -106,5 +106,14 @@ export const api = {
     logout: () => {
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_user');
+    },
+
+    getSlides: async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/slides`);
+            return await handleResponse(response);
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
     }
 };

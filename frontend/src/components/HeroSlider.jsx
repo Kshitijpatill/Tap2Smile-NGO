@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { api } from "../services/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Circle, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/utils";
 
-const slides = [
+const DEFAULT_SLIDES = [
     {
         id: 1,
         title: "Small Acts. Big Impact.",
@@ -35,7 +36,22 @@ const slides = [
 ];
 
 export default function HeroSlider() {
+    const [slides, setSlides] = useState(DEFAULT_SLIDES);
     const [current, setCurrent] = useState(0);
+
+    useEffect(() => {
+        const fetchSlides = async () => {
+            try {
+                const response = await api.getSlides();
+                if (response.success && response.data && response.data.length > 0) {
+                    setSlides(response.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch slides, using default:", error);
+            }
+        };
+        fetchSlides();
+    }, []);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -137,7 +153,7 @@ export default function HeroSlider() {
             </div>
 
             {/* Navigation Controls */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex items-center gap-6">
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-40 flex items-center gap-6">
                 <button
                     onClick={(e) => { e.stopPropagation(); prevSlide(); }}
                     className="p-4 rounded-full border border-brand-border dark:border-white/10 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md hover:bg-brand-gold hover:text-white transition-all text-brand-text dark:text-gray-400 active:scale-95 z-50 pointer-events-auto"
