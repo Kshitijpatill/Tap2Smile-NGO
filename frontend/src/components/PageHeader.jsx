@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 export default function PageHeader({ title, subtitle, image = "/assets/28827765_1957611921223329_6928397958251774922_o.jpeg" }) {
     return (
-        <section className="bg-brand-black relative py-16 md:py-24 overflow-hidden text-center">
+        <section className="bg-brand-black relative py-12 md:py-16 overflow-hidden text-center">
             {/* Background Image with 0.2 opacity */}
             <div
                 className="absolute inset-0 z-0 bg-cover bg-center opacity-20"

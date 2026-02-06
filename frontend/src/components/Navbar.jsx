@@ -36,16 +36,16 @@ export default function Navbar() {
         <nav
             className={cn(
                 "fixed left-0 right-0 z-50 transition-all duration-300",
-                "top-0 md:top-[44px]", 
-                scrolled ? "glass shadow-sm py-4 md:py-3 md:!top-0" : "bg-transparent py-4 md:py-6"
+                "top-0 lg:top-[44px]",
+                scrolled ? "glass shadow-xl py-4 lg:py-5 lg:!top-0" : "bg-transparent py-6 lg:py-10"
             )}
         >
             <div className="container-custom flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-2 group">
-                    <img 
-                        src={logo} 
-                        alt="TapToSmile" 
-                        className="h-10 md:h-14 w-auto drop-shadow-md transition-transform group-hover:scale-105 rounded-xl" 
+                    <img
+                        src={logo}
+                        alt="TapToSmile"
+                        className="h-12 md:h-16 lg:h-20 w-auto drop-shadow-md transition-transform group-hover:scale-105 rounded-xl dark:brightness-100 brightness-110 dark:contrast-100 contrast-125"
                     />
                 </Link>
                 <div className="hidden md:flex items-center gap-6">
@@ -55,7 +55,7 @@ export default function Navbar() {
                                 key={link.name}
                                 to={link.href}
                                 className={cn(
-                                    "text-sm font-bold transition-all hover:text-brand-gold relative group/link",
+                                    "text-sm lg:text-base font-black uppercase tracking-widest transition-all hover:text-brand-gold relative group/link",
                                     location.pathname === link.href ? "text-brand-gold" : "text-brand-text dark:text-gray-300"
                                 )}
                             >

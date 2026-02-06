@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Heart, CheckCircle2, DollarSign, User, Mail, Phone } from "lucide-react";
+import { Heart, CheckCircle2, IndianRupee, User, Mail, Phone } from "lucide-react";
 import Section from "../components/Section";
 import { api } from "../services/api";
 import { cn } from "../lib/utils";
@@ -7,10 +7,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import PageHeader from "../components/PageHeader";
 
 const donationTiers = [
-    { amount: 10, label: "Provide a warm meal", icon: "🍛" },
-    { amount: 50, label: "Supply a student's books", icon: "📚" },
-    { amount: 100, label: "Sponsor health checkup", icon: "🩺" },
-    { amount: 500, label: "Month of shelter support", icon: "🏠" },
+    { amount: 500, label: "Provide a warm meal", icon: "🍛" },
+    { amount: 1100, label: "Supply a student's books", icon: "📚" },
+    { amount: 2100, label: "Sponsor health checkup", icon: "🩺" },
+    { amount: 5100, label: "Month of shelter support", icon: "🏠" },
 ];
 
 export default function Donate() {
@@ -20,7 +20,7 @@ export default function Donate() {
         email: "",
         phone: ""
     });
-    
+
     const [amount, setAmount] = useState("");
     const [selectedTier, setSelectedTier] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -28,7 +28,7 @@ export default function Donate() {
 
     const handleDonate = async (e) => {
         e.preventDefault();
-        
+
         const finalAmount = selectedTier || amount;
         if (!finalAmount || parseFloat(finalAmount) <= 0) {
             alert("Please enter a valid amount");
@@ -66,7 +66,7 @@ export default function Donate() {
 
             <Section className="bg-brand-background dark:bg-[#0A0A0A]">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
-                    
+
                     {/* LEFT SIDE: Tiers */}
                     <div className="space-y-12">
                         <div>
@@ -87,12 +87,32 @@ export default function Donate() {
                                         <p className={cn(
                                             "text-2xl font-black mb-2",
                                             selectedTier === tier.amount ? "text-white" : "dark:text-white"
-                                        )}>${tier.amount}</p>
+                                        )}>₹{tier.amount}</p>
                                         <p className={cn(
                                             "text-xs font-bold uppercase tracking-widest",
                                             selectedTier === tier.amount ? "text-white/80" : "text-brand-text-muted dark:text-gray-500"
                                         )}>{tier.label}</p>
                                     </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Support/Helps Section */}
+                        <div className="pt-12">
+                            <h3 className="text-2xl font-black dark:text-white mb-8 uppercase tracking-widest text-brand-gold">Every Bit Helps</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                {[
+                                    { icon: "🍕", label: "Monthly Food" },
+                                    { icon: "📖", label: "School Kits" },
+                                    { icon: "💊", label: "Medical Aid" },
+                                    { icon: "🧘", label: "Yoga Sessions" },
+                                    { icon: "👵", label: "Elderly Care" },
+                                    { icon: "🌳", label: "Tree Planting" }
+                                ].map((item, idx) => (
+                                    <div key={idx} className="group p-6 rounded-[2rem] bg-white dark:bg-zinc-900 border border-brand-border dark:border-white/5 hover:border-brand-gold transition-all flex flex-col items-center gap-4 cursor-default overflow-hidden">
+                                        <div className="text-4xl group-hover:scale-110 transition-transform duration-300">{item.icon}</div>
+                                        <span className="font-bold text-xs uppercase tracking-[0.2em] text-brand-text-muted dark:text-gray-400 group-hover:text-brand-gold transition-colors">{item.label}</span>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -112,11 +132,11 @@ export default function Donate() {
                                     </div>
                                     <h3 className="text-3xl font-black mb-6 dark:text-white">Pledge Recorded!</h3>
                                     <p className="text-brand-text-muted dark:text-gray-400 text-lg mb-8 leading-relaxed">
-                                        Thank you, <span className="text-brand-gold font-bold">{formData.name}</span>. <br/>
-                                        We have received your pledge of ${selectedTier || amount}. Our team will contact you at {formData.phone} shortly.
+                                        Thank you, <span className="text-brand-gold font-bold">{formData.name}</span>. <br />
+                                        We have received your pledge of ₹{selectedTier || amount}. Our team will contact you at {formData.phone} shortly.
                                     </p>
                                     <button
-                                        onClick={() => { setIsSuccess(false); setFormData({name:"", email:"", phone:""}); }}
+                                        onClick={() => { setIsSuccess(false); setFormData({ name: "", email: "", phone: "" }); }}
                                         className="btn-primary px-12"
                                     >
                                         Make Another Pledge
@@ -130,12 +150,12 @@ export default function Donate() {
                                     className="bg-white dark:bg-zinc-900 rounded-[3.5rem] shadow-2xl border border-brand-border dark:border-white/5 overflow-hidden"
                                 >
                                     <div className="p-10 md:p-12 space-y-8">
-                                        
+
                                         {/* Amount Input */}
                                         <div className="space-y-4">
                                             <label className="text-xs font-black uppercase tracking-widest text-brand-text-muted ml-2">Pledge Amount</label>
                                             <div className="relative">
-                                                <DollarSign className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-gold h-6 w-6" />
+                                                <IndianRupee className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-gold h-6 w-6" />
                                                 <input
                                                     type="number"
                                                     placeholder="Enter Custom Amount"
@@ -157,7 +177,7 @@ export default function Donate() {
                                                         type="text"
                                                         placeholder="Full Name"
                                                         value={formData.name}
-                                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                                         className="w-full pl-16 pr-6 py-4 rounded-[1.5rem] bg-brand-background dark:bg-black/40 border border-brand-border dark:border-white/5 focus:outline-none focus:border-brand-gold font-bold dark:text-white"
                                                     />
                                                 </div>
@@ -168,7 +188,7 @@ export default function Donate() {
                                                         type="email"
                                                         placeholder="Email Address"
                                                         value={formData.email}
-                                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                                         className="w-full pl-16 pr-6 py-4 rounded-[1.5rem] bg-brand-background dark:bg-black/40 border border-brand-border dark:border-white/5 focus:outline-none focus:border-brand-gold font-bold dark:text-white"
                                                     />
                                                 </div>
@@ -181,7 +201,7 @@ export default function Donate() {
                                                         minLength={10}
                                                         maxLength={15}
                                                         value={formData.phone}
-                                                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                                         className="w-full pl-16 pr-6 py-4 rounded-[1.5rem] bg-brand-background dark:bg-black/40 border border-brand-border dark:border-white/5 focus:outline-none focus:border-brand-gold font-bold dark:text-white"
                                                     />
                                                 </div>
