@@ -77,19 +77,19 @@ export default function Donate() {
                                         key={tier.amount}
                                         onClick={() => { setSelectedTier(tier.amount); setAmount(""); }}
                                         className={cn(
-                                            "p-8 rounded-[2.5rem] border-2 text-left transition-all relative overflow-hidden group",
+                                            "p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border-2 text-left transition-all relative overflow-hidden group hover:scale-105",
                                             selectedTier === tier.amount
                                                 ? "bg-brand-gold border-brand-gold shadow-2xl scale-105"
                                                 : "bg-white dark:bg-zinc-900 border-brand-border dark:border-white/5 hover:border-brand-gold/50"
                                         )}
                                     >
-                                        <span className="text-4xl mb-6 block group-hover:scale-125 transition-transform">{tier.icon}</span>
+                                        <span className="text-3xl md:text-4xl mb-4 md:mb-6 block group-hover:scale-125 transition-transform">{tier.icon}</span>
                                         <p className={cn(
-                                            "text-2xl font-black mb-2",
+                                            "text-xl md:text-2xl font-black mb-2",
                                             selectedTier === tier.amount ? "text-white" : "dark:text-white"
                                         )}>₹{tier.amount}</p>
                                         <p className={cn(
-                                            "text-xs font-bold uppercase tracking-widest",
+                                            "text-[10px] md:text-xs font-bold uppercase tracking-widest",
                                             selectedTier === tier.amount ? "text-white/80" : "text-brand-text-muted dark:text-gray-500"
                                         )}>{tier.label}</p>
                                     </button>
@@ -109,9 +109,9 @@ export default function Donate() {
                                     { icon: "👵", label: "Elderly Care" },
                                     { icon: "🌳", label: "Tree Planting" }
                                 ].map((item, idx) => (
-                                    <div key={idx} className="group p-6 rounded-[2rem] bg-white dark:bg-zinc-900 border border-brand-border dark:border-white/5 hover:border-brand-gold transition-all flex flex-col items-center gap-4 cursor-default overflow-hidden">
-                                        <div className="text-4xl group-hover:scale-110 transition-transform duration-300">{item.icon}</div>
-                                        <span className="font-bold text-xs uppercase tracking-[0.2em] text-brand-text-muted dark:text-gray-400 group-hover:text-brand-gold transition-colors">{item.label}</span>
+                                    <div key={idx} className="group p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-zinc-900 border border-brand-border dark:border-white/5 hover:border-brand-gold hover:bg-brand-gold/5 transition-all flex flex-col items-center gap-3 md:gap-4 cursor-pointer overflow-hidden hover:scale-105">
+                                        <div className="text-3xl md:text-4xl group-hover:scale-110 transition-transform duration-300">{item.icon}</div>
+                                        <span className="font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] text-brand-text-muted dark:text-gray-400 group-hover:text-brand-gold transition-colors text-center">{item.label}</span>
                                     </div>
                                 ))}
                             </div>

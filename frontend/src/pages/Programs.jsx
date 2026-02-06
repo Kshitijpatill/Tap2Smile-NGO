@@ -127,7 +127,7 @@ export default function Programs() {
                                         viewport={{ once: true }}
                                         className="w-full lg:w-1/2"
                                     >
-                                        <div className="relative aspect-video lg:aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 md:border-8 border-brand-background dark:border-zinc-800">
+                                        <div className="relative aspect-video lg:aspect-[4/3] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl border-4 md:border-8 border-brand-background dark:border-zinc-800">
                                             <img
                                                 src={program.image}
                                                 alt={program.title}

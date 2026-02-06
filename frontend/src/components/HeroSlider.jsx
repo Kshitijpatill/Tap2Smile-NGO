@@ -48,7 +48,7 @@ export default function HeroSlider() {
     const prevSlide = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
 
     return (
-        <section className="relative min-h-[600px] h-[85vh] md:h-[90vh] flex items-center overflow-hidden bg-brand-background dark:bg-[#0A0A0A]">
+        <section className="relative min-h-[500px] md:min-h-[600px] h-[80vh] md:h-[85vh] lg:h-[90vh] flex items-center overflow-hidden bg-brand-background dark:bg-[#0A0A0A]">
             {/* Background Decorative Elements */}
             <div className="absolute inset-0 z-0 opacity-10 dark:opacity-5 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-gold rounded-full blur-[120px]" />
@@ -137,19 +137,21 @@ export default function HeroSlider() {
             </div>
 
             {/* Navigation Controls */}
-            <div className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 md:gap-6 pointer-events-none">
+            <div className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 md:gap-6">
                 <button
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); prevSlide(); }}
-                    className="p-3 md:p-4 rounded-full border border-brand-border dark:border-white/10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md hover:bg-brand-gold hover:text-white transition-all text-brand-text dark:text-gray-400 active:scale-95 pointer-events-auto"
+                    onClick={prevSlide}
+                    className="p-3 md:p-4 rounded-full border border-brand-border dark:border-white/10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md hover:bg-brand-gold hover:text-white transition-all text-brand-text dark:text-gray-400 active:scale-95"
+                    aria-label="Previous slide"
                 >
                     <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
                 </button>
 
-                <div className="flex gap-2 md:gap-3 pointer-events-auto bg-white/20 dark:bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                <div className="flex gap-2 md:gap-3 bg-white/20 dark:bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full">
                     {slides.map((_, idx) => (
                         <button
                             key={idx}
                             onClick={() => setCurrent(idx)}
+                            aria-label={`Go to slide ${idx + 1}`}
                             className={cn(
                                 "h-2 transition-all duration-300 rounded-full",
                                 current === idx ? "w-8 md:w-10 bg-brand-gold" : "w-2 bg-brand-border dark:bg-white/40 hover:bg-white"
@@ -159,8 +161,9 @@ export default function HeroSlider() {
                 </div>
 
                 <button
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); nextSlide(); }}
-                    className="p-3 md:p-4 rounded-full border border-brand-border dark:border-white/10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md hover:bg-brand-gold hover:text-white transition-all text-brand-text dark:text-gray-400 active:scale-95 pointer-events-auto"
+                    onClick={nextSlide}
+                    className="p-3 md:p-4 rounded-full border border-brand-border dark:border-white/10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md hover:bg-brand-gold hover:text-white transition-all text-brand-text dark:text-gray-400 active:scale-95"
+                    aria-label="Next slide"
                 >
                     <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
                 </button>

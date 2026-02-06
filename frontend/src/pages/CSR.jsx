@@ -69,11 +69,11 @@ export default function CSR() {
                         </div>
                     </div>
                     <div className="order-1 lg:order-2">
-                        <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group border-8 border-brand-background dark:border-zinc-800 aspect-[4/5]">
+                        <div className="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl group border-4 md:border-8 border-brand-background dark:border-zinc-800 aspect-[4/5]">
                             <img
                                 src="/assets/academicknowledge.jpg"
                                 alt="CSR Partnership"
-                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                                className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-brand-gold/10 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>

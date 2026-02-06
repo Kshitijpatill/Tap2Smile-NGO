@@ -74,11 +74,11 @@ export default function About() {
                     </div>
 
                     <div className="relative">
-                        <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl relative group">
+                        <div className="aspect-square rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl relative group">
                             <img
                                 src="/assets/0f250353-8dff-4433-8402-a5507098fe96.JPG"
                                 alt="Impact"
-                                className="w-full h-full object-cover md:grayscale group-hover:grayscale-0 transition-all duration-700"
+                                className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-brand-gold/20 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
@@ -120,11 +120,11 @@ export default function About() {
                 <div className="max-w-6xl mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <div className="relative order-2 lg:order-1">
-                            <div className="aspect-[4/5] rounded-3xl md:rounded-[3rem] overflow-hidden shadow-2xl relative group w-full">
+                            <div className="aspect-[4/5] rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl relative group w-full">
                                 <img
                                     src="/assets/founder.jpg"
                                     alt="Abhimanyu Upadhyay"
-                                    className="w-full h-full object-cover md:grayscale group-hover:grayscale-0 transition-transform duration-700 group-hover:scale-105"
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
                                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
                                     <h3 className="text-2xl font-bold">Abhimanyu Upadhyay</h3>
@@ -313,8 +313,8 @@ export default function About() {
                             viewport={{ once: true }}
                             className="group"
                         >
-                            <div className="relative aspect-[4/3] rounded-3xl md:rounded-[2.5rem] overflow-hidden mb-6 shadow-xl group-hover:shadow-brand-gold/10 transition-all duration-500 w-full">
-                                <img src={member.img} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
+                            <div className="relative aspect-[4/3] rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden mb-6 shadow-xl group-hover:shadow-brand-gold/10 transition-all duration-500 w-full">
+                                <img src={member.img} alt={member.name} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-brand-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
                                 <div className="absolute bottom-6 left-6 right-6">
                                     <h4 className="text-xl font-black text-white mb-1">{member.name}</h4>
