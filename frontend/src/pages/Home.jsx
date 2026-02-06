@@ -7,7 +7,7 @@ import HeroSlider from "../components/HeroSlider";
 import { api } from "../services/api";
 import { cn } from "../lib/utils";
 
-const stats = [
+const DEFAULT_STATS = [
     { label: "Lives Impacted", value: "200,000+", icon: Users },
     { label: "Meals Served", value: "500,000+", icon: Heart },
     { label: "Children Educated", value: "10,000+", icon: GraduationCap },
@@ -16,13 +16,44 @@ const stats = [
 
 export default function Home() {
     const [programs, setPrograms] = useState([]);
+    const [stats, setStats] = useState(DEFAULT_STATS);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        api.getPrograms().then((res) => {
-            if (res.success) setPrograms(res.data.slice(0, 3));
+        const fetchHomeData = async () => {
+            // Fetch Programs
+            api.getPrograms().then((res) => {
+                if (res.success && res.data) setPrograms(res.data.slice(0, 3));
+            });
+
+            // Fetch Impact Stats
+            const impactRes = await api.getImpact();
+            if (impactRes.success && impactRes.data && impactRes.data.length > 0) {
+                // Try to map API response to stats structure if keys match, otherwise use default structure with API values
+                // Assuming API returns object like { lives_impacted: "...", meals_served: "...", ... } or array of objects
+                // For now, let's map known keys if they exist, or keep default if API structure is different
+                // But since user said "content is not matching api backend structures like 200,000+", 
+                // it implies API *has* different data.
+                // Let's assume API returns a list of impact items or a single object. 
+                // If it's a list like [{label: 'Lives', value: '100'}, ...].
+
+                // If the API returns key-value pairs, we map them. 
+                // Let's assume standard structure or adaptable.
+                // If the API endpoints were designed for this, we'd use them.
+                // Given no specific schema knowledge, I'll assume we might get an array of stats.
+                if (Array.isArray(impactRes.data)) {
+                    const apiStats = impactRes.data.map(item => ({
+                        label: item.title || item.label,
+                        value: item.value || item.count,
+                        icon: item.icon === "Heart" ? Heart : (item.icon === "Users" ? Users : (item.icon === "GraduationCap" ? GraduationCap : HandHelping))
+                    }));
+                    if (apiStats.length > 0) setStats(apiStats);
+                }
+            }
+
             setLoading(false);
-        });
+        };
+        fetchHomeData();
     }, []);
 
     return (

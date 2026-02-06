@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-    Palette, Activity, Heart, GraduationCap, Megaphone, ArrowRight, Utensils, 
-    BookOpen, Home, Loader2, AlertCircle, HandHelping 
+import {
+    Palette, Activity, Heart, GraduationCap, Megaphone, ArrowRight, Utensils,
+    BookOpen, Home, Loader2, AlertCircle, HandHelping
 } from "lucide-react";
 import Section from "../components/Section";
 import PageHeader from "../components/PageHeader";
@@ -42,7 +42,7 @@ export default function Programs() {
                 }
             } catch (err) {
                 console.error("Error fetching data:", err);
-                setError("An unexpected error occurred.");
+                setError("Unable to load programs at this time.");
             } finally {
                 setLoading(false);
             }
@@ -53,7 +53,7 @@ export default function Programs() {
 
     const getRecentProjects = (programId) => {
         if (!projects || projects.length === 0) return [];
-        
+
         return projects
             .filter(p => {
                 const projectProgramIds = [];
@@ -83,8 +83,8 @@ export default function Programs() {
                 <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
                 <h2 className="text-2xl font-bold dark:text-white mb-2">Oops! Something went wrong.</h2>
                 <p className="text-gray-500 mb-6">{error}</p>
-                <button 
-                    onClick={() => window.location.reload()} 
+                <button
+                    onClick={() => window.location.reload()}
                     className="btn-primary"
                 >
                     Try Again
@@ -154,7 +154,7 @@ export default function Programs() {
                                     {recentProjects.length > 0 && (
                                         <div className="bg-brand-background dark:bg-zinc-900/50 p-6 rounded-3xl border border-brand-border dark:border-white/5">
                                             <h4 className="font-bold text-sm uppercase tracking-wider text-brand-text-muted dark:text-gray-500 mb-4 flex items-center gap-2">
-                                                <Activity className="w-4 h-4" /> Recent Projects 
+                                                <Activity className="w-4 h-4" /> Recent Projects
                                             </h4>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 {recentProjects.map(project => (
