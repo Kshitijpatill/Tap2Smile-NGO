@@ -11,6 +11,7 @@ The application is designed to be hosted at: [https://taptosmile.org](https://ta
 - React.js (Vite)
 - Tailwind CSS (Styling)
 - Axios (API Integration)
+- Framer Motion (Animations)
 
 **Backend:**
 - Python (FastAPI Framework)
@@ -22,9 +23,9 @@ The application is designed to be hosted at: [https://taptosmile.org](https://ta
 
 Ensure the hosting server has the following installed:
 
-- [Node.js](https://nodejs.org/) (v16 or higher) - Required for building the frontend.
+- [Node.js](https://nodejs.org/) (v18 or higher) - Required for building the frontend.
 - [Python](https://www.python.org/) (v3.10 or higher) - Required for running the server.
-- [Git](https://git-scm.com/) (Optional)
+- [Git](https://git-scm.com/)
 
 ## Production Deployment Guide (For Hosting)
 
@@ -74,6 +75,7 @@ python -m venv venv
 ```
 
 Activate it:
+
 **Windows:**
 ```bash
 .\venv\Scripts\Activate.ps1
@@ -90,11 +92,19 @@ pip install -r requirements.txt
 
 ### Step 4: Environment Variables (.env)
 
-Create a `.env` file inside the `backend/` folder. This is crucial for the database and emails to work.
+Create a `.env` file inside the `backend/` folder.
+Copy the .env.example file and rename it to `.env`.
+This is crucial for the database and emails to work.
 
 ```env
 # Database Configuration
-MONGODB_URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/tap_to_smile
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/?retryWrites=true&w=majority
+DATABASE_NAME=tap_to_smile
+
+# Security (JWT)
+# Generate a secure key using: openssl rand -hex 32
+SECRET_KEY=your_super_secret_random_string
+ACCESS_TOKEN_EXPIRE_MINUTES=10080  # 10080 minutes = 7 Days
 
 # Email Service (Gmail SMTP)
 MAIL_USERNAME=your-email@gmail.com
@@ -118,7 +128,7 @@ Access API Docs: `https://taptosmile.org/api/docs`
 
 ## Local Development Setup (For Developers)
 
-If you want to run the Frontend and Backend separately for development:
+Run the Frontend and Backend separately. We use a Vite Proxy, so you do not need to change API URLs in the code.
 
 ### 1. Backend (Port 8000)
 ```bash
