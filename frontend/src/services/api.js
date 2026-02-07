@@ -88,7 +88,14 @@ export const api = {
 
     deleteProgram: async (id) => handleResponse(axios.delete(`${API_URL}/programs/${id}`, { headers: getAuthHeader() })),
 
-    getProjects: async () => handleResponse(axios.get(`${API_URL}/projects/`)),
+    getProjects: async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/projects`);
+            return await handleResponse(response);
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    },
     getAdminProjects: async () =>
         handleResponse(
             axios.get(`${API_URL}/projects/admin`, {
@@ -118,6 +125,14 @@ export const api = {
     deleteEvent: async (id) => handleResponse(axios.delete(`${API_URL}/events/${id}`, { headers: getAuthHeader() })),
 
     getImpact: async () => handleResponse(axios.get(`${API_URL}/impact/`)),
+    getImpactStats: async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/impact`);
+            return await handleResponse(response);
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    },
     createImpact: async (data) => handleResponse(axios.post(`${API_URL}/impact/`, cleanData(data), { headers: getAuthHeader() })),
     updateImpact: async (id, data) => handleResponse(axios.patch(`${API_URL}/impact/${id}`, cleanData(data), { headers: getAuthHeader() })),
     deleteImpact: async (id) => handleResponse(axios.delete(`${API_URL}/impact/${id}`, { headers: getAuthHeader() })),
