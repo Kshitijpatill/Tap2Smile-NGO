@@ -331,36 +331,20 @@ export default function About() {
                     <span className="text-brand-gold font-black uppercase tracking-[0.3em] text-xs mb-4 block">Trust & Governance</span>
                     <h2 className="text-4xl md:text-5xl font-black mb-12 dark:text-white">Our <span className="text-brand-gold">Certifications</span></h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <motion.div
-                            whileHover={{ y: -10 }}
-                            className="glass p-8 rounded-[2.5rem] border border-brand-border dark:border-white/5 flex flex-col items-center"
-                        >
-                            <div className="w-full aspect-[1/1.414] bg-white dark:bg-zinc-800 rounded-2xl mb-8 shadow-inner flex items-center justify-center border-4 border-dashed border-brand-border dark:border-white/10 relative group overflow-hidden">
-                                <span className="text-brand-text-muted dark:text-gray-500 font-bold text-sm">Official Registration Certificate</span>
-                                {/* User should replace this with actual certificate image */}
-                                <div className="absolute inset-0 bg-brand-gold/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <Link to="/contact" className="btn-primary text-xs py-2 px-4">Request Copy</Link>
-                                </div>
+                    <motion.div
+                        whileHover={{ y: -10 }}
+                        className="glass p-8 md:p-12 rounded-[2.5rem] border border-brand-border dark:border-white/5 flex flex-col items-center max-w-2xl mx-auto"
+                    >
+                        <div className="w-full max-w-md aspect-[1/1.414] bg-white dark:bg-zinc-800 rounded-2xl mb-8 shadow-inner flex items-center justify-center border-4 border-dashed border-brand-border dark:border-white/10 relative group overflow-hidden">
+                            <span className="text-brand-text-muted dark:text-gray-500 font-bold text-sm">Official Registration Certificate</span>
+                            <div className="absolute inset-0 bg-brand-gold/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <Link to="/certificate" className="btn-primary text-xs py-2 px-4">View Certificate</Link>
                             </div>
-                            <h4 className="text-xl font-bold dark:text-white mb-2">Registration 739/2021</h4>
-                            <p className="text-brand-text-muted dark:text-gray-400 text-sm">Governed under the Societies Registration Act XXI of 1860</p>
-                        </motion.div>
-
-                        <motion.div
-                            whileHover={{ y: -10 }}
-                            className="glass p-8 rounded-[2.5rem] border border-brand-border dark:border-white/5 flex flex-col items-center"
-                        >
-                            <div className="w-full aspect-[1/1.414] bg-white dark:bg-zinc-800 rounded-2xl mb-8 shadow-inner flex items-center justify-center border-4 border-dashed border-brand-border dark:border-white/10 relative group overflow-hidden">
-                                <span className="text-brand-text-muted dark:text-gray-500 font-bold text-sm">80G Tax Exemption Status</span>
-                                <div className="absolute inset-0 bg-brand-gold/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <Link to="/donate" className="btn-primary text-xs py-2 px-4">Donate & Save Tax</Link>
-                                </div>
-                            </div>
-                            <h4 className="text-xl font-bold dark:text-white mb-2">12A & 80G Certified</h4>
-                            <p className="text-brand-text-muted dark:text-gray-400 text-sm">Donations are 50% tax exempt under Section 80G of IT Act</p>
-                        </motion.div>
-                    </div>
+                        </div>
+                        <h4 className="text-xl md:text-2xl font-bold dark:text-white mb-2">Registration 739/2021</h4>
+                        <p className="text-brand-text-muted dark:text-gray-400 text-sm md:text-base mb-6">Governed under the Societies Registration Act XXI of 1860</p>
+                        <Link to="/certificate" className="btn-primary px-8 py-3">Request Certificate Copy</Link>
+                    </motion.div>
                 </div>
             </Section>
         </div>

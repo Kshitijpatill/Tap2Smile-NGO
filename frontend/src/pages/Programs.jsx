@@ -24,7 +24,7 @@ const academyModules = [
     { area: "Global Learning", topics: "Cultures, geography, global etiquette", approach: "Virtual tours, international storytelling" },
 ];
 
-// Detailed program data with projects based on the images
+// Detailed program data with projects - images matched to context
 const programData = [
     {
         id: "kala",
@@ -60,12 +60,12 @@ const programData = [
         title: "Program Ātman",
         description: "Attempt to improve the physical health via Yoga, Meditation and other physical activities. A platform for mental health discussions that includes various mental health sessions.",
         icon: Activity,
-        image: "/assets/7dae08d9-696a-4a7b-badd-88611cea6d80.jpg",
+        image: "/assets/atman.jpg",
         projects: [
             {
                 name: "Yoga Sessions",
                 description: "Daily yoga and meditation classes for all ages",
-                image: "/assets/atman.jpg"
+                image: "/assets/7dae08d9-696a-4a7b-badd-88611cea6d80.jpg"
             },
             {
                 name: "Mental Health Talks",
@@ -147,12 +147,12 @@ const programData = [
         title: "Awareness Programs",
         description: "As the first step towards change is Awareness, we organize various awareness programs (Flash mobs, Road Shows, Marathons, Art Shows, Campaigns) and also create an impact by helping, uplifting, motivating or even just supporting someone.",
         icon: Megaphone,
-        image: "/assets/86b0333e-99d5-4d90-8b01-e07595cc170d.jpg",
+        image: "/assets/a95f1953-d291-4044-bc85-0be1d414581e.jpg",
         projects: [
             {
                 name: "Flash Mobs",
                 description: "Public awareness through dance and performance",
-                image: "/assets/a95f1953-d291-4044-bc85-0be1d414581e.jpg"
+                image: "/assets/305768958_3254057918245383_9122992633165420375_n.jpeg"
             },
             {
                 name: "Road Shows",

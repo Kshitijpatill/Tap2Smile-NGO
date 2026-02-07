@@ -14,6 +14,7 @@ import Events from "./pages/Events";
 import Contact from "./pages/Contact";
 import Donate from "./pages/Donate";
 import CSR from "./pages/CSR";
+import Certificate from "./pages/Certificate";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/csr" element={<CSR />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/certificate" element={<Certificate />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         </Route>
 
