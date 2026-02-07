@@ -53,7 +53,7 @@ export default function Contact() {
                     <div className="w-full lg:w-1/2 ">
                         <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group aspect-[4/3] border-8 border-brand-background dark:border-zinc-800">
                             <img
-                                src="/assets/volunteers.jpg"
+                                src="../../public/assets/0f250353-8dff-4433-8402-a5507098fe96.JPG"
                                 alt="Tap To Smile Volunteers"
                                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                             />
