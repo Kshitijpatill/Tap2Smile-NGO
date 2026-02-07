@@ -96,15 +96,15 @@ export default function HeroSlider() {
                         </div>
 
                         {/* Image Cutout Design */}
-                        <div className="order-2 lg:order-2 relative flex justify-center py-10">
+                        <div className="order-2 lg:order-2 relative flex justify-center lg:justify-end py-10 lg:py-0">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
                                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                                 transition={{ duration: 0.8, type: "spring", damping: 20 }}
-                                className="relative z-10 w-full max-w-[500px]"
+                                className="relative z-10 w-full max-w-[320px] sm:max-w-[400px] lg:max-w-[500px]"
                             >
                                 {/* Main Image with Cutout Mask or Shield Shape */}
-                                <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] md:rounded-[3rem] shadow-2xl border-[8px] md:border-[12px] border-white dark:border-zinc-800 transition-colors">
+                                <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] md:rounded-[3rem] shadow-2xl border-[6px] md:border-[12px] border-white dark:border-zinc-800 transition-colors">
                                     <img
                                         src={slides[current].image}
                                         alt={slides[current].title}
@@ -113,23 +113,23 @@ export default function HeroSlider() {
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                                 </div>
 
-                                {/* Floating Decorative Card */}
+                                {/* Floating Decorative Card - 80G */}
                                 <motion.div
                                     initial={{ x: 50, opacity: 0 }}
                                     animate={{ x: 0, opacity: 1 }}
                                     transition={{ delay: 0.8, duration: 0.6 }}
-                                    className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-12 glass p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl max-w-[150px] md:max-w-[220px] z-30"
+                                    className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-8 md:-bottom-8 md:-right-12 glass p-3 sm:p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-xl max-w-[120px] sm:max-w-[150px] md:max-w-[220px] z-30"
                                 >
-                                    <div className="flex flex-col gap-1 md:gap-2">
-                                        <span className="text-brand-gold font-black text-2xl md:text-4xl">80G</span>
-                                        <p className="text-[10px] md:text-sm font-bold text-brand-black dark:text-white uppercase tracking-wider">
-                                            Tax Benefits for all donations
+                                    <div className="flex flex-col gap-0 md:gap-2">
+                                        <span className="text-brand-gold font-black text-xl sm:text-2xl md:text-4xl leading-tight">80G</span>
+                                        <p className="text-[8px] sm:text-[10px] md:text-sm font-bold text-brand-black dark:text-white uppercase tracking-wider">
+                                            Tax Benefits
                                         </p>
                                     </div>
                                 </motion.div>
 
-                                {/* Background Shape Accent */}
-                                <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] border border-brand-gold/20 rounded-full border-dashed animate-[spin_20s_linear_infinite]" />
+                                {/* Background Shape Accent - Hide on small mobile */}
+                                <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[115%] h-[115%] border border-brand-gold/10 rounded-full border-dashed animate-[spin_30s_linear_infinite] hidden sm:block" />
                             </motion.div>
                         </div>
                     </motion.div>
@@ -137,32 +137,32 @@ export default function HeroSlider() {
             </div>
 
             {/* Navigation Controls */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex items-center gap-6">
+            <div className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 md:gap-6 pointer-events-none">
                 <button
-                    onClick={(e) => { e.stopPropagation(); prevSlide(); }}
-                    className="p-4 rounded-full border border-brand-border dark:border-white/10 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md hover:bg-brand-gold hover:text-white transition-all text-brand-text dark:text-gray-400 active:scale-95 z-50 pointer-events-auto"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); prevSlide(); }}
+                    className="p-3 md:p-4 rounded-full border border-brand-border dark:border-white/10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md hover:bg-brand-gold hover:text-white transition-all text-brand-text dark:text-gray-400 active:scale-95 pointer-events-auto"
                 >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
                 </button>
 
-                <div className="flex gap-3">
+                <div className="flex gap-2 md:gap-3 pointer-events-auto bg-white/20 dark:bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full">
                     {slides.map((_, idx) => (
                         <button
                             key={idx}
                             onClick={() => setCurrent(idx)}
                             className={cn(
                                 "h-2 transition-all duration-300 rounded-full",
-                                current === idx ? "w-10 bg-brand-gold" : "w-2 bg-brand-border dark:bg-white/20"
+                                current === idx ? "w-8 md:w-10 bg-brand-gold" : "w-2 bg-brand-border dark:bg-white/40 hover:bg-white"
                             )}
                         />
                     ))}
                 </div>
 
                 <button
-                    onClick={(e) => { e.stopPropagation(); nextSlide(); }}
-                    className="p-4 rounded-full border border-brand-border dark:border-white/10 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md hover:bg-brand-gold hover:text-white transition-all text-brand-text dark:text-gray-400 active:scale-95 z-50 pointer-events-auto"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); nextSlide(); }}
+                    className="p-3 md:p-4 rounded-full border border-brand-border dark:border-white/10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md hover:bg-brand-gold hover:text-white transition-all text-brand-text dark:text-gray-400 active:scale-95 pointer-events-auto"
                 >
-                    <ChevronRight className="w-6 h-6" />
+                    <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
                 </button>
             </div>
 

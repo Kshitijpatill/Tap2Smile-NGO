@@ -18,6 +18,7 @@ const handleResponse = async (request) => {
             message: error.response?.data?.detail || "Something went wrong"
         };
     }
+    return data;
 };
 
 // ✅ FIX: Helper function to clean data before sending to API
@@ -33,29 +34,26 @@ const cleanData = (data) => {
 };
 
 export const api = {
-
-    adminLogin: async (email, password) => {
-        const formData = new FormData();
-        formData.append("username", email);
-        formData.append("password", password);
-        try {
-            const res = await axios.post(`${API_URL}/admin/login`, formData);
-            if (res.data.access_token) {
-                localStorage.setItem("admin_token", res.data.access_token);
-                return { success: true };
-            }
-        } catch (error) {
-            return { success: false, message: "Invalid Credentials" };
+    // Auth & Token management (for Admin)
+    setToken: (token) => {
+        if (token) {
+            localStorage.setItem('admin_token', token);
+        } else {
+            localStorage.removeItem('admin_token');
         }
     },
+    getToken: () => localStorage.getItem('admin_token'),
 
-    requestPasswordReset: async (email) => {
-        try {
-            const res = await axios.post(`${API_URL}/admin/forgot-password`, { email });
-            return { success: true, message: res.data.message };
-        } catch (error) {
-            return { success: false, message: "Request failed" };
+    // Headers helper
+    getHeaders: () => {
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+        const token = localStorage.getItem('admin_token');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
         }
+        return headers;
     },
 
     adminLogout: () => {
@@ -73,18 +71,10 @@ export const api = {
 
     getPrograms: async () => {
         try {
-            const res = await axios.get(`${API_URL}/programs/`);
-            const adaptedData = res.data.map(p => ({
-                id: p.id,
-                title: p.title ?? "Untitled",
-                description: p.description ?? "",
-                icon: p.icon || "Heart",
-                cover_image: p.cover_image || "/placeholder.jpg",
-                is_active: p.is_active
-            }));
-            return { success: true, data: adaptedData };
+            const response = await fetch(`${BASE_URL}/programs`);
+            return await handleResponse(response);
         } catch (error) {
-            return { success: false, data: [] };
+            return { success: false, message: error.message };
         }
     },
     // ✅ FIX: Clean data before sending
@@ -117,20 +107,17 @@ export const api = {
 
     getEvents: async () => {
         try {
-            const res = await axios.get(`${API_URL}/events/`);
-            const adaptedData = res.data.map(e => ({ ...e, date: e.event_date }));
-            return { success: true, data: adaptedData };
+            const response = await fetch(`${BASE_URL}/events`);
+            return await handleResponse(response);
         } catch (error) {
-            return { success: false, data: [] };
+            return { success: false, message: error.message };
         }
     },
-    // ✅ FIX: Clean data before sending
     createEvent: async (data) => handleResponse(axios.post(`${API_URL}/events/`, cleanData(data), { headers: getAuthHeader() })),
     updateEvent: async (id, data) => handleResponse(axios.patch(`${API_URL}/events/${id}`, cleanData(data), { headers: getAuthHeader() })),
     deleteEvent: async (id) => handleResponse(axios.delete(`${API_URL}/events/${id}`, { headers: getAuthHeader() })),
 
     getImpact: async () => handleResponse(axios.get(`${API_URL}/impact/`)),
-    // ✅ FIX: Clean data before sending
     createImpact: async (data) => handleResponse(axios.post(`${API_URL}/impact/`, cleanData(data), { headers: getAuthHeader() })),
     updateImpact: async (id, data) => handleResponse(axios.patch(`${API_URL}/impact/${id}`, cleanData(data), { headers: getAuthHeader() })),
     deleteImpact: async (id) => handleResponse(axios.delete(`${API_URL}/impact/${id}`, { headers: getAuthHeader() })),

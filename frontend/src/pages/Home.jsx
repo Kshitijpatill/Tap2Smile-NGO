@@ -1,27 +1,60 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, Users, GraduationCap, HandHelping, ArrowRight, Star, Quote, Target } from "lucide-react";
+import { Heart, Users, GraduationCap, HandHelping, ArrowRight, Star, Quote, Target, Palette, Activity } from "lucide-react";
 import Section from "../components/Section";
 import HeroSlider from "../components/HeroSlider";
 import { api } from "../services/api";
 import { cn } from "../lib/utils";
 
-const stats = [
+const defaultStats = [
     { label: "Lives Impacted", value: "200,000+", icon: Users },
     { label: "Meals Served", value: "500,000+", icon: Heart },
     { label: "Children Educated", value: "10,000+", icon: GraduationCap },
     { label: "Volunteers", value: "1,200+", icon: HandHelping },
 ];
 
+const iconMap = {
+    Users, Heart, GraduationCap, HandHelping, Star, Target, Palette, Activity
+};
+
+const homePrograms = [
+    {
+        title: "Program Kāala",
+        desc: "Art classes and exposure for underprivileged talent.",
+        icon: Palette,
+        img: "/assets/50ea6add-857a-41e9-bfe4-e386c89c1174.jpg"
+    },
+    {
+        title: "Program Ātman",
+        desc: "Physical and mental health through Yoga and Meditation.",
+        icon: Activity,
+        img: "/assets/7dae08d9-696a-4a7b-badd-88611cea6d80.jpg"
+    },
+    {
+        title: "Program Vidya",
+        desc: "Educational support, kits and career guidance.",
+        icon: GraduationCap,
+        img: "/assets/2d43109a-6240-424a-9e6b-715ce40f513d.jpg"
+    }
+];
+
 export default function Home() {
-    const [programs, setPrograms] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState(defaultStats);
 
     useEffect(() => {
-        api.getPrograms().then((res) => {
-            if (res.success) setPrograms(res.data.slice(0, 3));
-            setLoading(false);
+        api.getImpactStats().then((res) => {
+            if (res && Array.isArray(res) && res.length > 0) {
+                const mappedStats = res.map(s => ({
+                    label: s.title,
+                    value: s.value,
+                    icon: iconMap[s.icon] || Heart
+                }));
+                setStats(mappedStats);
+            }
+        }).catch(error => {
+            console.error("Failed to fetch impact stats:", error);
+            // If API call fails, defaultStats will be used as initial state.
         });
     }, []);
 
@@ -43,7 +76,7 @@ export default function Home() {
                                 className="glass py-10 rounded-3xl md:rounded-[2rem] flex flex-col items-center group hover:bg-brand-gold/5 transition-colors border-white/10"
                             >
                                 <div className="p-3 bg-brand-gold/5 rounded-2xl mb-4">
-                                    <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-brand-gold" />
+                                    {stat.icon && <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-brand-gold" />}
                                 </div>
                                 <h3 className="text-2xl md:text-3xl font-black text-brand-black dark:text-white mb-1">{stat.value}</h3>
                                 <p className="text-brand-text-muted dark:text-gray-500 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">{stat.label}</p>
@@ -61,7 +94,7 @@ export default function Home() {
                             <img
                                 src="/assets/4334f5ac-5172-4e60-879e-2998041a7ed0.jpg"
                                 alt="Founder Vision"
-                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                                className="w-full h-full object-cover md:grayscale group-hover:grayscale-0 transition-all duration-700"
                             />
                             <div className="absolute inset-0 bg-gradient-to-tr from-brand-gold/40 to-transparent mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
@@ -171,12 +204,20 @@ export default function Home() {
                     </div>
                     <div className="w-full lg:w-1/2 grid grid-cols-2 gap-6">
                         <div className="space-y-6 pt-12">
-                            <img src="/assets/86b0333e-99d5-4d90-8b01-e07595cc170d.jpg" className="rounded-3xl shadow-xl w-full" alt="Awareness" />
-                            <img src="/assets/d1d88dba-3854-474a-8957-1becf8065703.jpg" className="rounded-3xl shadow-xl w-full" alt="Impact" />
+                            <div className="aspect-video rounded-3xl overflow-hidden shadow-xl">
+                                <img src="/assets/86b0333e-99d5-4d90-8b01-e07595cc170d.jpg" className="w-full h-full object-cover" alt="Awareness" />
+                            </div>
+                            <div className="aspect-square rounded-3xl overflow-hidden shadow-xl">
+                                <img src="/assets/d1d88dba-3854-474a-8957-1becf8065703.jpg" className="w-full h-full object-cover" alt="Impact" />
+                            </div>
                         </div>
                         <div className="space-y-6">
-                            <img src="/assets/0f250353-8dff-4433-8402-a5507098fe96.JPG" className="rounded-3xl shadow-xl w-full" alt="Social" />
-                            <img src="/assets/a95f1953-d291-4044-bc85-0be1d414581e.jpg" className="rounded-3xl shadow-xl w-full" alt="Change" />
+                            <div className="aspect-square rounded-3xl overflow-hidden shadow-xl">
+                                <img src="/assets/0f250353-8dff-4433-8402-a5507098fe96.JPG" className="w-full h-full object-cover" alt="Social" />
+                            </div>
+                            <div className="aspect-video rounded-3xl overflow-hidden shadow-xl">
+                                <img src="/assets/a95f1953-d291-4044-bc85-0be1d414581e.jpg" className="w-full h-full object-cover" alt="Change" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -185,45 +226,37 @@ export default function Home() {
             <Section className="bg-brand-background dark:bg-zinc-900/50">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <span className="text-brand-gold font-black uppercase tracking-[0.3em] text-xs mb-4 block">Core Initiatives</span>
-                    <h2 className="text-4xl md:text-5xl font-black mb-6 dark:text-white">Our Programs</h2>
+                    <h2 className="text-4xl md:text-5xl font-black mb-6 dark:text-white">Our <span className="text-brand-gold">Programs</span></h2>
+                    <p className="text-brand-text-muted dark:text-gray-400 font-medium">Sustainable impact through targeted community development.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {loading ? (
-                        Array(3).fill(0).map((_, i) => (
-                            <div key={i} className="card h-[450px] animate-pulse" />
-                        ))
-                    ) : (
-                        programs.map((program) => (
-                            <div key={program.id} className="card group flex flex-col h-full bg-white dark:bg-zinc-900 border-none shadow-xl hover:shadow-2xl transition-all">
-                                <div className="relative h-64 overflow-hidden">
-                                    <img
-                                        src={program.cover_image}
-                                        alt={program.title}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                    />
-                                    <div className="absolute top-4 left-4">
-                                        <span className="glass bg-white/90 dark:bg-black/80 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-brand-gold">
-                                            {program.title}
-                                        </span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    {homePrograms.map((program, idx) => (
+                        <div key={idx} className="group relative bg-white dark:bg-zinc-900 rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all border border-brand-border/50 dark:border-white/5">
+                            <div className="relative h-64 overflow-hidden">
+                                <img
+                                    src={program.img}
+                                    alt={program.title}
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                <div className="absolute bottom-6 left-6 flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-brand-gold rounded-xl flex items-center justify-center shadow-lg">
+                                        <program.icon className="w-5 h-5 text-white" />
                                     </div>
-                                </div>
-                                <div className="p-8 flex flex-col flex-grow">
-                                    <h3 className="text-2xl font-bold mb-4 dark:text-white group-hover:text-brand-gold transition-colors">
-                                        {program.title}
-                                    </h3>
-                                    <p className="text-brand-text-muted dark:text-gray-400 mb-8 line-clamp-3">
-                                        {program.short_description}
-                                    </p>
-                                    <div className="mt-auto space-y-6">
-                                        <Link to={`/programs`} className="btn-primary w-full py-3.5 group text-sm">
-                                            Donate Now
-                                        </Link>
-                                    </div>
+                                    <h3 className="text-xl font-black text-white">{program.title}</h3>
                                 </div>
                             </div>
-                        ))
-                    )}
+                            <div className="p-8">
+                                <p className="text-brand-text-muted dark:text-gray-400 mb-8 leading-relaxed line-clamp-2">
+                                    {program.desc}
+                                </p>
+                                <Link to="/programs" className="flex items-center gap-2 text-brand-gold font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
+                                    Explore Program <ArrowRight size={14} />
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </Section>
 
@@ -243,7 +276,7 @@ export default function Home() {
                             <Link to="/donate" className="btn-primary px-12 py-5 text-xl w-full sm:w-auto">
                                 Donate Now
                             </Link>
-                            <Link to="/contact" className="btn-outline border-white/20 text-white hover:bg-white hover:text-brand-black px-12 py-5 text-xl w-full sm:w-auto">
+                            <Link to="/contact?tab=volunteer" className="btn-outline border-white/20 text-white hover:bg-white hover:text-brand-black px-12 py-5 text-xl w-full sm:w-auto">
                                 Join our Volunteer Team
                             </Link>
                         </div>

@@ -68,20 +68,21 @@ export default function Events() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.4, delay: 0.2 + (idx * 0.1) }}
-                                    className="group relative flex flex-col md:flex-row gap-8 p-8 md:p-10 rounded-[2.5rem] hover:bg-brand-gold/5 transition-all border border-brand-border/50 dark:border-white/5"
+                                    className="group relative flex flex-col gap-0 rounded-[2.5rem] bg-white dark:bg-zinc-900 overflow-hidden border border-brand-border/50 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all"
                                 >
-                                    <div className="flex-shrink-0">
-                                        <div className="w-20 h-24 bg-brand-gold/10 dark:bg-brand-gold/5 rounded-2xl flex flex-col items-center justify-center text-center group-hover:bg-brand-gold transition-colors duration-500">
-                                            <span className="text-brand-gold group-hover:text-white font-black text-3xl">
-                                                {new Date(event.date).getDate()}
-                                            </span>
-                                            <span className="text-brand-text-muted dark:text-gray-500 group-hover:text-white/80 text-[10px] font-black uppercase tracking-[0.2em]">
-                                                {new Date(event.date).toLocaleString('default', { month: 'short' })}
-                                            </span>
+                                    <div className="relative aspect-video overflow-hidden">
+                                        <img
+                                            src={event.cover_image || "/assets/artisticexpression.jpg"}
+                                            alt={event.title}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        />
+                                        <div className="absolute top-6 left-6 flex flex-col items-center justify-center w-16 h-16 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-2xl shadow-lg">
+                                            <span className="text-brand-gold font-black text-xl leading-none">{new Date(event.date).getDate()}</span>
+                                            <span className="text-brand-text-muted dark:text-gray-400 text-[8px] font-black uppercase tracking-widest">{new Date(event.date).toLocaleString('default', { month: 'short' })}</span>
                                         </div>
                                     </div>
 
-                                    <div className="flex-grow space-y-4">
+                                    <div className="p-8 md:p-10 space-y-6 flex-grow">
                                         <div className="flex items-center gap-3">
                                             <span className={cn(
                                                 "text-[9px] uppercase font-black tracking-[0.2em] px-3 py-1 rounded-full",
@@ -93,20 +94,22 @@ export default function Events() {
                                         <h3 className="text-2xl font-black dark:text-white group-hover:text-brand-gold transition-colors">{event.title}</h3>
                                         <p className="text-brand-text-muted dark:text-gray-400 leading-relaxed text-sm line-clamp-2">{event.description}</p>
 
-                                        <div className="flex flex-wrap gap-6 text-[10px] font-black uppercase tracking-widest text-brand-text-muted dark:text-gray-500">
-                                            <div className="flex items-center gap-2"><MapPin size={14} className="text-brand-gold" /> {event.location}</div>
-                                            <div className="flex items-center gap-2"><Clock size={14} className="text-brand-gold" /> {new Date(event.date).toLocaleDateString()}</div>
+                                        <div className="flex flex-wrap gap-6 mt-4">
+                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand-text-muted dark:text-gray-500">
+                                                <MapPin size={14} className="text-brand-gold" /> {event.location}
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="flex items-center justify-end md:justify-center">
-                                        {event.is_upcoming ? (
-                                            <button className="btn-primary py-3 px-8 text-[10px] uppercase font-black tracking-widest">Join Event</button>
-                                        ) : (
-                                            <button className="p-4 rounded-full bg-brand-background dark:bg-white/5 text-brand-gold hover:bg-brand-gold hover:text-white transition-all">
-                                                <ArrowRight size={20} />
-                                            </button>
-                                        )}
+                                        <div className="pt-4 mt-auto border-t border-brand-border dark:border-white/5 flex items-center justify-between">
+                                            {event.is_upcoming ? (
+                                                <button className="btn-primary py-3 px-8 text-[10px] uppercase font-black tracking-widest">Join Event</button>
+                                            ) : (
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-brand-text-muted dark:text-gray-500">View Gallery</span>
+                                            )}
+                                            <div className="p-3 rounded-full bg-brand-background dark:bg-white/5 text-brand-gold hover:bg-brand-gold hover:text-white transition-all cursor-pointer">
+                                                <ArrowRight size={18} />
+                                            </div>
+                                        </div>
                                     </div>
                                 </motion.div>
                             ))
