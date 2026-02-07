@@ -29,7 +29,8 @@ export const SECTION_CONFIG = {
         required: true,
       },
       { name: "icon", label: "Icon Name (e.g. Heart, School)", type: "text" },
-      { name: "cover_image", label: "Cover Image URL", type: "text" },
+      { name: "cover_image", label: "Cover Image", type: "file" },
+
       {
         name: "is_active",
         label: "Active",
@@ -47,32 +48,37 @@ export const SECTION_CONFIG = {
     updateFn: api.updateProject,
     deleteFn: api.deleteProject,
     fields: [
-      { name: "title", label: "Title", type: "text", required: true },
-      {
-        name: "description",
-        label: "Description",
-        type: "textarea",
-        required: true,
-      },
-      { name: "location", label: "Location", type: "text" },
-      // Updated to Multi Select
-      {
-        name: "program_ids",
-        label: "Programs (Select Multiple)",
-        type: "program_multi_select",
-        required: true,
-      },
-      // Updated to handle array as comma-separated string for simplicity in UI, or generic text input
-      { name: "images", label: "Image URL", type: "text" },
-      { name: "start_date", label: "Start Date", type: "date" },
-      { name: "end_date", label: "End Date", type: "date" },
-      {
-        name: "is_active",
-        label: "Active",
-        type: "checkbox",
-        defaultValue: true,
-      },
-    ],
+  { name: "title", label: "Project Title", type: "text", required: true },
+
+  {
+    name: "description",
+    label: "Description",
+    type: "textarea",
+    required: true,
+  },
+
+  { name: "location", label: "Location", type: "text" },
+
+  {
+    name: "program_ids",
+    label: "Programs (Select Multiple)",
+    type: "program_multi_select",
+    required: true,
+  },
+
+  { name: "images", label: "Project Image", type: "file" },
+
+  { name: "start_date", label: "Start Date", type: "date" },
+  { name: "end_date", label: "End Date", type: "date" },
+
+  {
+    name: "is_active",
+    label: "Active",
+    type: "checkbox",
+    defaultValue: true,
+  },
+]
+
   },
   events: {
     label: "Events",
@@ -119,25 +125,47 @@ export const SECTION_CONFIG = {
     ],
   },
   donations: {
-    label: "Pledges",
-    emoji: "💖",
-    icon: <Heart size={24} className="text-yellow-600" />,
-    fetchFn: api.getAdminDonations,
-    createFn: api.createDonation, // Enabled CRUD
-    updateFn: api.updateDonation,
-    deleteFn: api.deleteDonation,
-    fields: [
-      { name: "donor_name", label: "Donor Name", type: "text", required: true },
-      { name: "donor_email", label: "Donor Email", type: "text" },
-      { name: "amount", label: "Amount", type: "number", required: true },
-      {
-        name: "status",
-        label: "Status",
-        type: "select",
-        options: ["pending", "received", "cancelled"],
-      },
-    ],
-  },
+  label: "Pledges",
+  emoji: "💖",
+  icon: <Heart size={24} className="text-yellow-600" />,
+  fetchFn: api.getAdminDonations,
+  createFn: api.createDonation,
+  updateFn: api.updateDonation,
+  deleteFn: api.deleteDonation,
+  fields: [
+    {
+      name: "donor_name",
+      label: "Donor Name",
+      type: "text",
+      required: true
+    },
+    {
+      name: "donor_email",
+      label: "Donor Email",
+      type: "text",
+      required: true
+    },
+    {
+      name: "donor_phone",
+      label: "Donor Phone Number",
+      type: "text",
+      required: true
+    },
+    {
+      name: "amount",
+      label: "Amount",
+      type: "number",
+      required: true
+    },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      options: ["pending", "received", "cancelled"]
+    }
+  ],
+},
+
   impact: {
     label: "Impact Stats",
     emoji: "📊",

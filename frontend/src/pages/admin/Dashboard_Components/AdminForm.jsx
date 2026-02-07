@@ -14,7 +14,6 @@ export default function AdminForm({
   const [formData, setFormData] = useState(initialData || {});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
   const [programsList, setProgramsList] = useState([]);
 
   useEffect(() => {
@@ -24,6 +23,8 @@ export default function AdminForm({
       });
     }
   }, [section]);
+
+  /* -------------------- handlers -------------------- */
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -36,37 +37,70 @@ export default function AdminForm({
   const handleMultiSelectChange = (e, id) => {
     const { checked } = e.target;
     setFormData((prev) => {
-      const currentIds = prev.program_ids || [];
-      if (checked) {
-        return { ...prev, program_ids: [...currentIds, id] };
-      } else {
-        return { ...prev, program_ids: currentIds.filter((pid) => pid !== id) };
-      }
+      const current = prev.program_ids || [];
+      return {
+        ...prev,
+        program_ids: checked
+          ? [...current, id]
+          : current.filter((pid) => pid !== id),
+      };
     });
   };
+
+  /* -------------------- submit -------------------- */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    try {
-      let payload = { ...formData };
+    let payload;
 
-      // ✅ FIX: Handle projects images
+    try {
+      payload = { ...formData };
+
+      /* -------- Donations (special case) -------- */
+      if (section === "donations") {
+        payload = {
+          donor_name: formData.donor_name || formData.name,
+          donor_email: formData.donor_email || formData.email,
+          donor_phone: formData.donor_phone || "0000000000",
+          amount: Number(formData.amount),
+          message: "Admin panel donation entry",
+        };
+      }
+
+      /* -------- Image upload: Programs -------- */
+      if (payload.cover_image instanceof File) {
+        const res = await api.uploadImage(payload.cover_image);
+        if (!res.success) throw new Error("Cover image upload failed");
+        payload.cover_image = res.url;
+      }
+
+      /* -------- Image upload: Projects -------- */
+      if (payload.images instanceof File) {
+        const res = await api.uploadImage(payload.images);
+        if (!res.success) throw new Error("Project image upload failed");
+        payload.images = [res.url];
+      }
+
       if (section === "projects" && typeof payload.images === "string") {
         payload.images = [payload.images];
       }
 
-      // ✅ FIX: Log what we're sending for debugging
+      if (section === "projects" && !Array.isArray(payload.images)) {
+        payload.images = [];
+      }
+
+      /* -------- Never send these -------- */
+      delete payload.id;
+      delete payload.status;
+
       console.log("📤 Submitting data:", payload);
 
-      let result;
-      if (initialData?.id) {
-        result = await updateFn(initialData.id, payload);
-      } else {
-        result = await createFn(payload);
-      }
+      const result = initialData?.id
+        ? await updateFn(initialData.id, payload)
+        : await createFn(payload);
 
       console.log("✅ Result:", result);
 
@@ -74,35 +108,37 @@ export default function AdminForm({
         onSuccess();
         onClose();
       } else {
-        // ✅ FIX: Better error message display
-        setError(result.message || "Operation failed. Please check your input.");
+        setError(result.message || "Operation failed");
       }
+
     } catch (err) {
       console.error("❌ Form Error:", err);
-      
-      // ✅ FIX: Handle 422 validation errors specifically
+
       if (err.response?.status === 422) {
         const details = err.response?.data?.detail;
         if (Array.isArray(details)) {
-          // Pydantic validation error format
-          const errorMessages = details.map(d => `${d.loc[1]}: ${d.msg}`).join(", ");
-          setError(`Validation Error: ${errorMessages}`);
+          setError(
+            "Validation Error: " +
+              details.map(d => `${d.loc.at(-1)}: ${d.msg}`).join(", ")
+          );
         } else {
-          setError("Validation failed. Please check all required fields.");
+          setError("Validation failed");
         }
       } else {
-        setError(err.message || "An error occurred");
+        setError(err.message || "Unexpected error");
       }
+
     } finally {
       setLoading(false);
     }
   };
 
+  /* -------------------- render fields -------------------- */
+
   const renderField = (field) => {
-    const commonClasses =
+    const cls =
       "w-full p-3 bg-zinc-800 rounded-xl text-white border border-zinc-700 focus:border-brand-gold outline-none";
 
-    // 1. Text / Number / Date / Password
     if (["text", "number", "date", "password"].includes(field.type)) {
       return (
         <input
@@ -111,7 +147,7 @@ export default function AdminForm({
           name={field.name}
           value={formData[field.name] || ""}
           onChange={handleChange}
-          className={commonClasses}
+          className={cls}
           required={field.required}
           placeholder={field.label}
           readOnly={field.readOnly}
@@ -119,7 +155,6 @@ export default function AdminForm({
       );
     }
 
-    // 2. Textarea
     if (field.type === "textarea") {
       return (
         <textarea
@@ -127,14 +162,13 @@ export default function AdminForm({
           name={field.name}
           value={formData[field.name] || ""}
           onChange={handleChange}
-          className={`${commonClasses} h-32`}
+          className={`${cls} h-32`}
           required={field.required}
           placeholder={field.label}
         />
       );
     }
 
-    // 3. Select Dropdown
     if (field.type === "select") {
       return (
         <select
@@ -142,123 +176,103 @@ export default function AdminForm({
           name={field.name}
           value={formData[field.name] || ""}
           onChange={handleChange}
-          className={commonClasses}
+          className={cls}
         >
           <option value="">-- Select --</option>
           {field.options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
+            <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
       );
     }
 
-    // 4. Checkbox
     if (field.type === "checkbox") {
       return (
-        <label
-          key={field.name}
-          className="flex items-center gap-3 text-white cursor-pointer"
-        >
+        <label key={field.name} className="flex gap-3 text-white">
           <input
             type="checkbox"
             name={field.name}
             checked={formData[field.name] ?? field.defaultValue ?? false}
             onChange={handleChange}
-            className="w-5 h-5 rounded accent-brand-gold"
+            className="accent-brand-gold"
           />
           {field.label}
         </label>
       );
     }
 
-    // 5. Program Multi-Select
     if (field.type === "program_multi_select") {
       return (
-        <div
-          key={field.name}
-          className="bg-zinc-800 p-4 rounded-xl border border-zinc-700"
-        >
-          <label className="block text-gray-400 mb-2 text-sm">
+        <div key={field.name} className="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
+          <label className="text-gray-400 text-sm mb-2 block">
             {field.label}
           </label>
-          <div className="space-y-2 max-h-40 overflow-y-auto">
-            {programsList.map((prog) => {
-              const isChecked = (formData.program_ids || []).includes(prog.id);
-              return (
-                <label
-                  key={prog.id}
-                  className="flex items-center gap-3 text-white text-sm cursor-pointer hover:bg-zinc-700 p-2 rounded"
-                >
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={(e) => handleMultiSelectChange(e, prog.id)}
-                    className="w-4 h-4 rounded accent-brand-gold"
-                  />
-                  {prog.title}
-                </label>
-              );
-            })}
-            {programsList.length === 0 && (
-              <span className="text-gray-500 text-xs">No programs found.</span>
-            )}
-          </div>
+          {programsList.map((p) => (
+            <label key={p.id} className="flex gap-3 text-white text-sm">
+              <input
+                type="checkbox"
+                checked={(formData.program_ids || []).includes(p.id)}
+                onChange={(e) => handleMultiSelectChange(e, p.id)}
+                className="accent-brand-gold"
+              />
+              {p.title}
+            </label>
+          ))}
         </div>
+      );
+    }
+
+    if (field.type === "file") {
+      return (
+        <input
+          key={field.name}
+          type="file"
+          accept="image/*"
+          onChange={(e) =>
+            setFormData(prev => ({
+              ...prev,
+              [field.name]: e.target.files[0],
+            }))
+          }
+          className={cls}
+        />
       );
     }
 
     return null;
   };
 
+  /* -------------------- UI -------------------- */
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-      <div className="bg-zinc-900 w-full max-w-2xl rounded-3xl p-8 relative border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-        >
-          <X className="w-6 h-6" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+      <div className="bg-zinc-900 w-full max-w-2xl rounded-3xl p-8 relative overflow-y-auto max-h-[90vh]">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400">
+          <X />
         </button>
 
         <h2 className="text-2xl font-bold text-white mb-6">
-          {initialData
-            ? `Edit ${section.slice(0, -1)}`
-            : `Add New ${section.slice(0, -1)}`}
+          {initialData ? `Edit ${section.slice(0, -1)}` : `Add New ${section.slice(0, -1)}`}
         </h2>
 
-        {/* ✅ FIX: Better error display with icon */}
         {error && (
-          <div className="bg-red-500/20 text-red-400 p-4 rounded-xl mb-6 border border-red-500/30 flex items-start gap-3">
-            <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-semibold">Error</p>
-              <p className="text-sm mt-1">{error}</p>
-            </div>
+          <div className="bg-red-500/20 text-red-400 p-4 rounded-xl mb-6 flex gap-3">
+            <AlertCircle />
+            {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {fields.map(renderField)}
 
-          <div className="mt-8 flex justify-end">
+          <div className="flex justify-end mt-8">
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-black disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary px-8 py-3 rounded-xl font-bold text-black"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-5 h-5" />
-                  Save Changes
-                </>
-              )}
+              {loading ? <Loader2 className="animate-spin" /> : <Save />}
+              Save Changes
             </button>
           </div>
         </form>

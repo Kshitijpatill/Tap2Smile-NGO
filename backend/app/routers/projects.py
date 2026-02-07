@@ -9,26 +9,57 @@ from app.core.deps import get_current_user
 router = APIRouter()
 
 
+# --------------------------------------------------
+# Helpers
+# --------------------------------------------------
 async def validate_program_ids(program_ids: List[str]):
     if not program_ids:
         return []
 
     valid_obj_ids = []
+
     for pid in program_ids:
         if not ObjectId.is_valid(pid):
             raise HTTPException(
-                status_code=400, detail=f"Invalid Program ID format: {pid}")
+                status_code=400,
+                detail=f"Invalid Program ID format: {pid}"
+            )
 
         program = await db.programs.find_one({"_id": ObjectId(pid)})
         if not program:
             raise HTTPException(
-                status_code=404, detail=f"Program with ID {pid} not found")
+                status_code=404,
+                detail=f"Program with ID {pid} not found"
+            )
 
         valid_obj_ids.append(ObjectId(pid))
 
     return valid_obj_ids
 
 
+def normalize_dates(data: dict):
+    if data.get("start_date"):
+        data["start_date"] = datetime.combine(data["start_date"], time.min)
+    if data.get("end_date"):
+        data["end_date"] = datetime.combine(data["end_date"], time.min)
+
+
+def normalize_program_ids(project: dict):
+    found_ids = set()
+
+    if isinstance(project.get("program_ids"), list):
+        for pid in project["program_ids"]:
+            found_ids.add(str(pid))
+
+    if project.get("program_id"):
+        found_ids.add(str(project["program_id"]))
+
+    project["program_ids"] = list(found_ids)
+
+
+# --------------------------------------------------
+# Public: Get Projects
+# --------------------------------------------------
 @router.get("/", response_model=List[ProjectResponse])
 async def get_projects(active_only: bool = True):
     query = {}
@@ -41,30 +72,26 @@ async def get_projects(active_only: bool = True):
     results = []
     for p in projects:
         p["id"] = str(p["_id"])
-
-        found_ids = set()
-        if "program_ids" in p and isinstance(p["program_ids"], list):
-            for pid in p["program_ids"]:
-                found_ids.add(str(pid))
-
-        if "program_id" in p and p["program_id"]:
-            found_ids.add(str(p["program_id"]))
-
-        p["program_ids"] = list(found_ids)
-
+        normalize_program_ids(p)
         results.append(p)
 
     return results
 
 
-@router.get("/admin", dependencies=[Depends(get_current_user)], response_model=List[ProjectResponse])
+# --------------------------------------------------
+# Admin: Get Projects
+# --------------------------------------------------
+@router.get(
+    "/admin",
+    dependencies=[Depends(get_current_user)],
+    response_model=List[ProjectResponse]
+)
 async def get_all_projects_admin(program_id: Optional[str] = Query(None)):
     query = {}
 
     if program_id:
         if not ObjectId.is_valid(program_id):
-            raise HTTPException(
-                status_code=400, detail="Invalid Program ID format")
+            raise HTTPException(status_code=400, detail="Invalid Program ID")
 
         query["$or"] = [
             {"program_ids": ObjectId(program_id)},
@@ -77,68 +104,63 @@ async def get_all_projects_admin(program_id: Optional[str] = Query(None)):
     results = []
     for p in projects:
         p["id"] = str(p["_id"])
-
-        found_ids = set()
-        if "program_ids" in p and isinstance(p["program_ids"], list):
-            for pid in p["program_ids"]:
-                found_ids.add(str(pid))
-        if "program_id" in p and p["program_id"]:
-            found_ids.add(str(p["program_id"]))
-
-        p["program_ids"] = list(found_ids)
-
+        normalize_program_ids(p)
         results.append(p)
 
     return results
 
 
-@router.post("/", dependencies=[Depends(get_current_user)], response_model=ProjectResponse)
+# --------------------------------------------------
+# Admin: Create Project
+# --------------------------------------------------
+@router.post(
+    "/",
+    dependencies=[Depends(get_current_user)],
+    response_model=ProjectResponse
+)
 async def create_project(project: ProjectBase):
     project_data = project.model_dump()
 
-    if project_data.get("program_ids"):
-        project_data["program_ids"] = await validate_program_ids(project_data["program_ids"])
-    else:
-        project_data["program_ids"] = []
+    # ✅ program_ids
+    project_data["program_ids"] = await validate_program_ids(
+        project_data.get("program_ids", [])
+    )
 
-    if project_data.get("start_date"):
-        project_data["start_date"] = datetime.combine(
-            project_data["start_date"], time.min)
-    if project_data.get("end_date"):
-        project_data["end_date"] = datetime.combine(
-            project_data["end_date"], time.min)
+    # ✅ dates
+    normalize_dates(project_data)
 
     project_data["created_at"] = datetime.now(timezone.utc)
     project_data["updated_at"] = project_data["created_at"]
 
-    new_project = await db.projects.insert_one(project_data)
-    created_project = await db.projects.find_one({"_id": new_project.inserted_id})
+    result = await db.projects.insert_one(project_data)
 
-    created_project["id"] = str(created_project["_id"])
-    created_project["program_ids"] = [
-        str(pid) for pid in created_project.get("program_ids", [])]
+    created = await db.projects.find_one({"_id": result.inserted_id})
+    created["id"] = str(created["_id"])
+    normalize_program_ids(created)
 
-    return created_project
+    return created
 
 
-@router.put("/{project_id}", dependencies=[Depends(get_current_user)], response_model=ProjectResponse)
+# --------------------------------------------------
+# Admin: Update Project (PATCH – IMPORTANT)
+# --------------------------------------------------
+@router.patch(
+    "/{project_id}",
+    dependencies=[Depends(get_current_user)],
+    response_model=ProjectResponse
+)
 async def update_project(project_id: str, project: ProjectBase):
     if not ObjectId.is_valid(project_id):
-        raise HTTPException(
-            status_code=400, detail="Invalid Project ID format")
+        raise HTTPException(status_code=400, detail="Invalid Project ID")
 
     update_data = project.model_dump()
 
     if "program_ids" in update_data:
-        update_data["program_ids"] = await validate_program_ids(update_data["program_ids"])
+        update_data["program_ids"] = await validate_program_ids(
+            update_data.get("program_ids", [])
+        )
 
-    if update_data.get("start_date"):
-        update_data["start_date"] = datetime.combine(
-            update_data["start_date"], time.min)
-    if update_data.get("end_date"):
-        update_data["end_date"] = datetime.combine(
-            update_data["end_date"], time.min)
-
+    normalize_dates(update_data)
     update_data["updated_at"] = datetime.now(timezone.utc)
 
     result = await db.projects.update_one(
@@ -149,30 +171,27 @@ async def update_project(project_id: str, project: ProjectBase):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    updated_project = await db.projects.find_one({"_id": ObjectId(project_id)})
+    updated = await db.projects.find_one({"_id": ObjectId(project_id)})
+    updated["id"] = str(updated["_id"])
+    normalize_program_ids(updated)
 
-    updated_project["id"] = str(updated_project["_id"])
-
-    found_ids = set()
-    if "program_ids" in updated_project and isinstance(updated_project["program_ids"], list):
-        for pid in updated_project["program_ids"]:
-            found_ids.add(str(pid))
-    if "program_id" in updated_project and updated_project["program_id"]:
-        found_ids.add(str(updated_project["program_id"]))
-    updated_project["program_ids"] = list(found_ids)
-
-    return updated_project
+    return updated
 
 
-@router.delete("/{project_id}", dependencies=[Depends(get_current_user)])
+# --------------------------------------------------
+# Admin: Delete Project
+# --------------------------------------------------
+@router.delete(
+    "/{project_id}",
+    dependencies=[Depends(get_current_user)]
+)
 async def delete_project(project_id: str):
     if not ObjectId.is_valid(project_id):
-        raise HTTPException(
-            status_code=400, detail="Invalid Project ID format")
+        raise HTTPException(status_code=400, detail="Invalid Project ID")
 
     result = await db.projects.delete_one({"_id": ObjectId(project_id)})
 
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    return {"message": "Project deleted successfully"}
+    return {"success": True, "message": "Project deleted successfully"}

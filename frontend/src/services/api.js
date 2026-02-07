@@ -63,6 +63,26 @@ export const api = {
         window.location.href = "/admin/login";
     },
 
+
+    uploadImage: async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const res = await axios.post("/api/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...getAuthHeader()
+      }
+    });
+    return { success: true, url: res.data.url };
+  } catch (err) {
+    return { success: false, message: "Image upload failed" };
+  }
+},
+
+
+
     getAdminProfile: async () => {
         return handleResponse(axios.get(`${API_URL}/admin/me`, { headers: getAuthHeader() }));
     },
@@ -91,7 +111,7 @@ export const api = {
     createProgram: async (data) => handleResponse(axios.post(`${API_URL}/programs/`, cleanData(data), { headers: getAuthHeader() })),
     updateProgram: async (id, data) =>
         handleResponse(
-            axios.put(`${API_URL}/programs/${id}`, cleanData(data), {
+            axios.patch(`${API_URL}/programs/${id}`, cleanData(data), {
                 headers: getAuthHeader()
             })
         ),
@@ -111,7 +131,13 @@ export const api = {
 
     // ✅ FIX: Clean data before sending
     createProject: async (data) => handleResponse(axios.post(`${API_URL}/projects/`, cleanData(data), { headers: getAuthHeader() })),
-    updateProject: async (id, data) => handleResponse(axios.patch(`${API_URL}/projects/${id}`, cleanData(data), { headers: getAuthHeader() })),
+    updateProject: async (id, data) =>
+  handleResponse(
+    axios.patch(`${API_URL}/projects/${id}`, cleanData(data), {
+      headers: getAuthHeader()
+    })
+  ),
+
     deleteProject: async (id) => handleResponse(axios.delete(`${API_URL}/projects/${id}`, { headers: getAuthHeader() })),
 
 
@@ -165,8 +191,36 @@ export const api = {
         return handleResponse(axios.post(`${API_URL}/donations/`, cleanData(payload)));
     },
     getAdminDonations: async () => handleResponse(axios.get(`${API_URL}/donations/`, { headers: getAuthHeader() })),
-    createDonation: async (data) => handleResponse(axios.post(`${API_URL}/donations/`, cleanData(data), { headers: getAuthHeader() })),
-    updateDonation: async (id, data) => handleResponse(axios.patch(`${API_URL}/donations/${id}`, cleanData(data), { headers: getAuthHeader() })),
-    updateDonationStatus: async (id, status) => handleResponse(axios.patch(`${API_URL}/donations/${id}/status`, { status }, { headers: getAuthHeader() })),
+    createDonation: async (data) => {
+        const payload = {
+            donor_name: data.donor_name?.trim() || data.name?.trim(),
+            donor_email: data.donor_email || data.email,
+            donor_phone: data.donor_phone || data.phone || "N/A",
+            amount: Number(data.amount),
+            status: data.status || "pending"
+        };
+
+        return handleResponse(
+            axios.post(`${API_URL}/donations/`, cleanData(payload), {
+                headers: getAuthHeader()
+            })
+        );
+    },
+
+    updateDonation: async (id, data) =>
+        handleResponse(
+            axios.put(`${API_URL}/donations/${id}`, cleanData(data), {
+                headers: getAuthHeader()
+            })
+        ),
+
+    updateDonationStatus: async (id, status) =>
+        handleResponse(
+            axios.put(`${API_URL}/donations/${id}`, { status }, {
+                headers: getAuthHeader()
+            })
+        ),
+
     deleteDonation: async (id) => handleResponse(axios.delete(`${API_URL}/donations/${id}`, { headers: getAuthHeader() }))
 };
+

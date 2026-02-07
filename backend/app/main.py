@@ -6,6 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import test_mongodb_connection
 
+
 from app.routers import (
     programs,
     projects,
@@ -14,7 +15,9 @@ from app.routers import (
     contact,
     donations,
     impact,
-    admin
+    admin,
+    upload
+
 )
 
 app = FastAPI(
@@ -48,7 +51,9 @@ app.include_router(contact.router, prefix="/api/contact", tags=["Contact"])
 app.include_router(
     donations.router, prefix="/api/donations", tags=["Donations"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+app.include_router(upload.router, prefix="/api", tags=["Upload"])
 
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
