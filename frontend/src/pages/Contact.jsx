@@ -58,11 +58,11 @@ export default function Contact() {
             <Section className="bg-white dark:bg-[#0A0A0A]">
                 <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
                     <div className="w-full lg:w-1/2 ">
-                        <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group aspect-[4/3] border-8 border-brand-background dark:border-zinc-800">
+                        <div className="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl group aspect-[4/3] border-4 md:border-8 border-brand-background dark:border-zinc-800">
                             <img
                                 src="/assets/team_pune.jpg"
                                 alt="Tap To Smile Volunteers"
-                                className="w-full h-full object-cover md:grayscale group-hover:grayscale-0 transition-all duration-700"
+                                className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-brand-gold/10 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>

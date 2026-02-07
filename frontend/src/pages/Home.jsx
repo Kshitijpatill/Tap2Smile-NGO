@@ -35,7 +35,7 @@ const homePrograms = [
         title: "Program Vidya",
         desc: "Educational support, kits and career guidance.",
         icon: GraduationCap,
-        img: "/assets/2d43109a-6240-424a-9e6b-715ce40f513d.jpg"
+        img: "/assets/academicknowledge.jpg"
     }
 ];
 
@@ -90,11 +90,11 @@ export default function Home() {
             <Section className="bg-white dark:bg-[#0A0A0A]">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
                     <div className="relative">
-                        <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl group">
+                        <div className="relative aspect-[4/5] rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl group">
                             <img
                                 src="/assets/4334f5ac-5172-4e60-879e-2998041a7ed0.jpg"
                                 alt="Founder Vision"
-                                className="w-full h-full object-cover md:grayscale group-hover:grayscale-0 transition-all duration-700"
+                                className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-gradient-to-tr from-brand-gold/40 to-transparent mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>

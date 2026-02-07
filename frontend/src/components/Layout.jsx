@@ -16,7 +16,7 @@ export default function Layout({ children }) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="flex-grow pt-48 md:pt-64 lg:pt-72"
+                className="flex-grow pt-32 md:pt-36 lg:pt-40"
             >
                 <Outlet />
                 {children}

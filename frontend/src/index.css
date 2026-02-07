@@ -76,3 +76,23 @@
 section {
   @apply transition-colors duration-500;
 }
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-brand-background dark:bg-zinc-800 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-brand-gold/30 rounded-full hover:bg-brand-gold/50;
+}
+
+/* Remove default grayscale on mobile for all images */
+@media (max-width: 768px) {
+  img.md\:grayscale {
+    filter: none !important;
+  }
+}

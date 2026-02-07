@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .image-test {
+            margin: 20px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        img {
+            max-width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Image Loading Test</h1>
+    <p>Testing if images from /assets/ folder are loading correctly</p>
+    
+    <div class="image-test">
+        <h3>Test 1: artisticexpression.jpg</h3>
+        <img src="/assets/artisticexpression.jpg" alt="Test 1" onload="this.nextElementSibling.innerHTML='✓ Loaded'" onerror="this.nextElementSibling.innerHTML='✗ Failed'">
+        <p class="status">Loading...</p>
+    </div>
+
+    <div class="image-test">
+        <h3>Test 2: academicknowledge.jpg</h3>
+        <img src="/assets/academicknowledge.jpg" alt="Test 2" onload="this.nextElementSibling.innerHTML='✓ Loaded'" onerror="this.nextElementSibling.innerHTML='✗ Failed'">
+        <p class="status">Loading...</p>
+    </div>
+
+    <div class="image-test">
+        <h3>Test 3: seva.jpg</h3>
+        <img src="/assets/seva.jpg" alt="Test 3" onload="this.nextElementSibling.innerHTML='✓ Loaded'" onerror="this.nextElementSibling.innerHTML='✗ Failed'">
+        <p class="status">Loading...</p>
+    </div>
+
+    <div class="image-test">
+        <h3>Test 4: team_pune.jpg</h3>
+        <img src="/assets/team_pune.jpg" alt="Test 4" onload="this.nextElementSibling.innerHTML='✓ Loaded'" onerror="this.nextElementSibling.innerHTML='✗ Failed'">
+        <p class="status">Loading...</p>
+    </div>
+
+    <div class="image-test">
+        <h3>Test 5: 0f250353-8dff-4433-8402-a5507098fe96.JPG (uppercase)</h3>
+        <img src="/assets/0f250353-8dff-4433-8402-a5507098fe96.JPG" alt="Test 5" onload="this.nextElementSibling.innerHTML='✓ Loaded'" onerror="this.nextElementSibling.innerHTML='✗ Failed'">
+        <p class="status">Loading...</p>
+    </div>
+
+    <script>
+        console.log('Image test page loaded');
+        console.log('Check each image above to see if they load correctly');
+    </script>
+</body>
+</html>
